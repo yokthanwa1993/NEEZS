@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    font-family: 'SukhumvitSet-Medium', 'SukhumvitSet-Text', sans-serif !important;
+  }
+  
+  body {
+    font-family: 'SukhumvitSet-Medium', 'SukhumvitSet-Text', sans-serif !important;
+  }
+  
+  div, span, p, h1, h2, h3, h4, h5, h6, text {
+    font-family: 'SukhumvitSet-Medium', 'SukhumvitSet-Text', sans-serif !important;
+  }
+}

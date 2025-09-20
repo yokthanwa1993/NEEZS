@@ -1,0 +1,17 @@
+{
+  "expo": {
+    "name": "NEEZS Job App",
+    "slug": "neezs-job-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "scheme": "neezs-job-app",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "plugins": [
+      "expo-font",
+      "expo-web-browser"
+    ]
+  }
+}
