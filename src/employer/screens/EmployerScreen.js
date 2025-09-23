@@ -1,11 +1,12 @@
 import React from 'react';
-import { SafeAreaView, ScrollView, View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { ScrollView, View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Text, H1, H2, MediumText } from '../../shared/components/Typography';
 import SectionHeader from '../../shared/components/SectionHeader';
 import ApplicantCard from '../components/ApplicantCard';
 import { employerJobs, highlightedApplicants } from '../../shared/data/mockData';
-import * as authService from '../../shared/services/authService';
+import * as authApi from '../../shared/services/authApi';
 
 const EmployerScreen = () => {
   const handleSignOut = async () => {
@@ -18,10 +19,7 @@ const EmployerScreen = () => {
           text: 'ออกจากระบบ',
           style: 'destructive',
           onPress: async () => {
-            const result = await authService.signOutUser();
-            if (!result.success) {
-              Alert.alert('ข้อผิดพลาด', result.error);
-            }
+            await authApi.logout();
           },
         },
       ]

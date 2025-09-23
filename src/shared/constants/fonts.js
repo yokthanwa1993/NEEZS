@@ -5,7 +5,7 @@ export const FONTS = {
   medium: 'SukhumvitSet-Medium',
   semiBold: 'SukhumvitSet-SemiBold',
   bold: 'SukhumvitSet-Bold',
-  extraBold: 'SukhumvitSet-ExtraBold',
+  extraBold: 'SukhumvitSet-Bold',
 };
 
 // Font weight mapping for cross-platform compatibility
@@ -15,8 +15,8 @@ export const FONT_WEIGHTS = {
   500: 'SukhumvitSet-Medium', 
   600: 'SukhumvitSet-SemiBold',
   700: 'SukhumvitSet-Bold',
-  800: 'SukhumvitSet-ExtraBold',
-  900: 'SukhumvitSet-ExtraBold',
+  800: 'SukhumvitSet-Bold',
+  900: 'SukhumvitSet-Bold',
 };
 
 // Helper function to get font family based on weight

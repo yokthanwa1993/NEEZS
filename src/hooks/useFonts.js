@@ -6,7 +6,6 @@ export const useCustomFonts = () => {
     'SukhumvitSet-Medium': require('../../assets/fonts/SukhumvitSet-Medium.ttf'),
     'SukhumvitSet-SemiBold': require('../../assets/fonts/SukhumvitSet-SemiBold.ttf'),
     'SukhumvitSet-Bold': require('../../assets/fonts/SukhumvitSet-Bold.ttf'),
-    'SukhumvitSet-ExtraBold': require('../../assets/fonts/SukhumvitSet-ExtraBold.ttf'),
   });
 
   return fontsLoaded;

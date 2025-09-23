@@ -1,7 +1,7 @@
 // Firebase configuration
 import { initializeApp } from 'firebase/app';
 import { getAuth, initializeAuth, getReactNativePersistence } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, initializeFirestore, setLogLevel } from 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Your web app's Firebase configuration
@@ -30,7 +30,25 @@ try {
 }
 
 // Initialize Firestore
-const db = getFirestore(app);
+let db;
+const FORCE_LONG_POLLING = (process.env.EXPO_PUBLIC_FIRESTORE_FORCE_LONG_POLLING ?? 'true') === 'true';
+try {
+  // Reduce WebChannel transport errors on React Native by auto‑detecting long polling
+  db = initializeFirestore(app, {
+    // Toggle via env; default true for RN
+    experimentalForceLongPolling: FORCE_LONG_POLLING,
+    useFetchStreams: false,
+  });
+} catch (e) {
+  // If already initialized elsewhere, fall back to the default instance
+  db = getFirestore(app);
+}
+
+// Firestore log level — configurable via env; default: debug in dev, error in prod
+try {
+  const LV = process.env.EXPO_PUBLIC_FIRESTORE_LOG_LEVEL || (__DEV__ ? 'debug' : 'error');
+  setLogLevel(LV);
+} catch {}
 
 export { auth, db };
 export default app;

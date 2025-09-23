@@ -52,7 +52,7 @@ const SeekerNotificationsScreen = () => {
   const data = useMemo(() => (tab === 'general' ? general : applications), [tab]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView edges={['top']} style={styles.container}>
       {/* Header */}
       <View style={styles.header}> 
         <Text weight={700} style={styles.headerTitle}>Notifications</Text>

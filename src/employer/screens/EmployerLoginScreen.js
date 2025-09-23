@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, Alert, StatusBar, ScrollView, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, TextInput, TouchableOpacity, Alert, StatusBar, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { Text, H1 } from '../../shared/components/Typography';
 import { Button, Input, Card } from '../../shared/components/EnhancedUI';
-import * as authService from '../../shared/services/authService';
+// Switch to API-only auth
+import * as authApi from '../../shared/services/authApi';
 
 export default function EmployerLoginScreen({ navigation }) {
+  const insets = useSafeAreaInsets();
+  const { height } = useWindowDimensions();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -23,9 +28,13 @@ export default function EmployerLoginScreen({ navigation }) {
     setErrors({});
     
     try {
-      const result = await authService.signInWithEmail(email, password);
-      if (!result.success) {
-        Alert.alert('ข้อผิดพลาด', result.error);
+      // set portal first so Root navigator picks correct stack when auth state flips
+      try { await AsyncStorage.setItem('NEEZS_PORTAL','employer'); } catch {}
+      const result = await authApi.loginWithEmail({ email, password, role: 'employer' });
+      if (!result?.token) {
+        Alert.alert('ข้อผิดพลาด', result?.error || 'เข้าสู่ระบบไม่สำเร็จ');
+      } else {
+        navigation.reset({ index: 0, routes: [{ name: 'EmployerTabs' }] });
       }
     } catch (error) {
       Alert.alert('ข้อผิดพลาด', 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ');
@@ -37,10 +46,8 @@ export default function EmployerLoginScreen({ navigation }) {
   const handleGoogleLogin = async () => {
     setLoading(true);
     try {
-      const result = await authService.signInWithGoogle();
-      if (!result.success) {
-        Alert.alert('ข้อผิดพลาด', result.error);
-      }
+      try { await AsyncStorage.setItem('NEEZS_PORTAL','employer'); } catch {}
+      Alert.alert('ยังไม่พร้อมใช้งาน', 'เข้าสู่ระบบด้วย Google จะย้ายไปทำที่ backend ในขั้นถัดไป');
     } catch (error) {
       Alert.alert('ข้อผิดพลาด', 'เกิดข้อผิดพลาดในการเข้าสู่ระบบด้วย Google');
     } finally {
@@ -60,14 +67,16 @@ export default function EmployerLoginScreen({ navigation }) {
     >
       <SafeAreaView style={{ flex: 1 }}>
         <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
-        <ScrollView 
-          contentContainerStyle={{ 
-            flexGrow: 1, 
-            padding: 24, 
-            justifyContent: 'center' 
-          }}
-          showsVerticalScrollIndicator={false}
-        >
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+          <View
+            style={{
+              minHeight: Math.max(640, height - insets.top - insets.bottom),
+              paddingHorizontal: 20,
+              paddingTop: 12,
+              paddingBottom: 12,
+              justifyContent: 'space-between',
+            }}
+          >
           {/* Header with Icon */}
           <View style={{ alignItems: 'center', marginBottom: 32 }}>
             <View style={{
@@ -103,7 +112,7 @@ export default function EmployerLoginScreen({ navigation }) {
             </Text>
           </View>
           
-          <Card style={{ marginBottom: 24 }}>
+          <Card style={{ marginBottom: 12 }}>
             {/* Email Input */}
             <View style={{ marginBottom: 20 }}>
               <Text style={{ 
@@ -157,7 +166,7 @@ export default function EmployerLoginScreen({ navigation }) {
             </View>
 
             {/* Password Input */}
-            <View style={{ marginBottom: 24 }}>
+            <View style={{ marginBottom: 18 }}>
               <Text style={{ 
                 fontSize: 14, 
                 fontWeight: '500',
@@ -174,7 +183,7 @@ export default function EmployerLoginScreen({ navigation }) {
                 borderColor: errors.password ? '#ef4444' : '#e5e7eb',
                 borderRadius: 12,
                 paddingHorizontal: 16,
-                paddingVertical: 14,
+                paddingVertical: 12,
               }}>
                 <Ionicons 
                   name="lock-closed-outline" 
@@ -217,9 +226,9 @@ export default function EmployerLoginScreen({ navigation }) {
                 justifyContent: 'center',
                 backgroundColor: '#3b82f6',
                 borderRadius: 12,
-                paddingVertical: 16,
+                paddingVertical: 14,
                 paddingHorizontal: 24,
-                marginBottom: 16,
+                marginBottom: 12,
                 shadowColor: '#3b82f6',
                 shadowOffset: { width: 0, height: 4 },
                 shadowOpacity: 0.3,
@@ -244,7 +253,7 @@ export default function EmployerLoginScreen({ navigation }) {
             <View style={{ 
               flexDirection: 'row', 
               alignItems: 'center', 
-              marginVertical: 20 
+              marginVertical: 12 
             }}>
               <View style={{ 
                 flex: 1, 
@@ -277,9 +286,9 @@ export default function EmployerLoginScreen({ navigation }) {
                 borderWidth: 1,
                 borderColor: '#dadce0',
                 borderRadius: 12,
-                paddingVertical: 16,
+                paddingVertical: 14,
                 paddingHorizontal: 24,
-                marginBottom: 16,
+                marginBottom: 12,
                 shadowColor: '#000',
                 shadowOffset: { width: 0, height: 1 },
                 shadowOpacity: 0.1,
@@ -311,10 +320,10 @@ export default function EmployerLoginScreen({ navigation }) {
           </Card>
 
           {/* Footer */}
-          <View style={{ alignItems: 'center', marginTop: 16 }}>
+          <View style={{ alignItems: 'center', marginTop: 8 }}>
             <Text style={{ 
               color: '#6b7280', 
-              fontSize: 14,
+              fontSize: 13,
               textAlign: 'center',
               lineHeight: 20 
             }}>
@@ -330,23 +339,11 @@ export default function EmployerLoginScreen({ navigation }) {
           </View>
 
           {/* Back Button */}
-          <TouchableOpacity 
-            onPress={() => navigation.goBack()}
-            style={{
-              alignItems: 'center',
-              marginTop: 24,
-              padding: 12,
-            }}
-          >
-            <Text style={{
-              color: '#6b7280',
-              fontSize: 16,
-              fontWeight: '500'
-            }}>
-              กลับไปหน้าเลือก
-            </Text>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={{ alignItems: 'center', marginTop: 8, padding: 8 }}>
+            <Text style={{ color: '#6b7280', fontSize: 15, fontWeight: '500' }}>กลับไปหน้าเลือก</Text>
           </TouchableOpacity>
-        </ScrollView>
+          </View>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     </LinearGradient>
   );

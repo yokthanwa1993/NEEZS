@@ -1,5 +1,6 @@
 import React from 'react';
-import { SafeAreaView, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Text, H1, H2, MediumText } from '../components/Typography';
 
@@ -61,7 +62,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 24,
-    paddingTop: 24,
+    justifyContent: 'center',
   },
   logoWrapper: {
     alignItems: 'center',
@@ -83,7 +84,8 @@ const styles = StyleSheet.create({
     fontSize: 42,
     fontWeight: '800',
     color: '#111827',
-    lineHeight: 48,
+    // เพิ่ม lineHeight ให้รองรับสระ/วรรณยุกต์ภาษาไทยไม่ถูกตัดบน iOS
+    lineHeight: 60,
     textAlign: 'center',
   },
   cards: {

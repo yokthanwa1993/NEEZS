@@ -3,17 +3,23 @@ import { View, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { Text } from './Typography';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Image } from 'react-native';
-import { useAuth } from '../contexts/AuthContext';
+import { useSeekerAuth } from '../../seeker/contexts/SeekerAuthContext';
+import { useEmployerAuth } from '../../employer/contexts/EmployerAuthContext';
+import tailwindConfig from '../../../tailwind.config.js';
 
-const ACTIVE_COLOR = '#f5c518';
-const INACTIVE_COLOR = '#6b7280';
+const ACTIVE_COLOR = tailwindConfig.theme.extend.colors.accent; // '#f5c518'
+// Use black for inactive icons and labels
+const INACTIVE_ICON_COLOR = '#111827';
+const INACTIVE_LABEL_COLOR = '#111827';
 
 const BottomTabBar = ({ state, descriptors, navigation }) => {
   const insets = useSafeAreaInsets();
-  const { user } = useAuth();
+  const seekerAuth = useSeekerAuth?.() || {};
+  const employerAuth = useEmployerAuth?.() || {};
+  const user = seekerAuth.user || employerAuth.user || null;
 
   return (
-    <View style={[styles.wrapper, { paddingBottom: Math.max(insets.bottom, 16) }]}> 
+    <View style={[styles.wrapper, { paddingBottom: Math.max(insets.bottom, 12) }]}> 
       <View style={styles.inner}>
         {state.routes.map((route, index) => {
           const { options } = descriptors[route.key];
@@ -45,19 +51,20 @@ const BottomTabBar = ({ state, descriptors, navigation }) => {
           };
 
           let icon = null;
-          // ใช้รูปโปรไฟล์ถ้ามี สำหรับแท็บโปรไฟล์
-          if (route.name === 'SeekerProfile' && user?.photoURL) {
+          // แท็บโปรไฟล์: แสดงรูปโปรไฟล์ถ้ามี หากไม่มีให้ใช้ placeholder
+          if (route.name === 'SeekerProfile') {
+            const uri = user?.photoURL || `https://i.pravatar.cc/100?u=${user?.uid || 'anon'}`;
             icon = (
               <Image
-                source={{ uri: user.photoURL }}
-                style={{ width: 28, height: 28, borderRadius: 14 }}
+                source={{ uri }}
+                style={{ width: 28, height: 28, borderRadius: 14, borderWidth: isFocused ? 2 : 0, borderColor: ACTIVE_COLOR }}
               />
             );
           } else if (typeof options.tabBarIcon === 'function') {
             icon = options.tabBarIcon({
               focused: isFocused,
-              color: isFocused ? ACTIVE_COLOR : INACTIVE_COLOR,
-              size: 28,
+              color: isFocused ? ACTIVE_COLOR : INACTIVE_ICON_COLOR,
+              size: 30,
             });
           }
 
@@ -73,10 +80,10 @@ const BottomTabBar = ({ state, descriptors, navigation }) => {
               activeOpacity={0.7}
               style={styles.item}
             >
-              <View style={[styles.iconWrapper, isFocused && styles.iconWrapperActive]}>
+              <View style={[styles.iconWrapper]}>
                 {icon}
               </View>
-              <Text weight={600} style={[styles.label, isFocused ? styles.labelActive : styles.labelInactive]}>
+              <Text weight={900} style={[styles.label, isFocused ? styles.labelActive : styles.labelInactive]}>
                 {label}
               </Text>
             </TouchableOpacity>
@@ -89,16 +96,11 @@ const BottomTabBar = ({ state, descriptors, navigation }) => {
 
 const styles = StyleSheet.create({
   wrapper: {
-    backgroundColor: 'rgba(255,255,255,0.92)',
+    backgroundColor: '#ffffff',
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: '#e2e8f0',
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    shadowColor: '#000',
-    shadowOpacity: Platform.OS === 'ios' ? 0.12 : 0.2,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: -4 },
-    elevation: 12,
+    paddingHorizontal: 8,
+    paddingTop: 8,
   },
   inner: {
     flexDirection: 'row',
@@ -111,26 +113,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   iconWrapper: {
-    width: 48,
-    height: 48,
-    borderRadius: 16,
+    height: 32,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  iconWrapperActive: {
-    backgroundColor: '#f5c51833',
-  },
   label: {
-    marginTop: 6,
-    fontSize: 13,
-    fontWeight: '600',
+    marginTop: 8,
+    fontSize: 14,
   },
   labelActive: {
     color: ACTIVE_COLOR,
   },
   labelInactive: {
-    color: INACTIVE_COLOR,
-    fontWeight: '500',
+    color: INACTIVE_LABEL_COLOR,
   },
 });
 

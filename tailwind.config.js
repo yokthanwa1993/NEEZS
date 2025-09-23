@@ -18,7 +18,8 @@ module.exports = {
         medium: ['"SukhumvitSet-Medium"', ...fontFamily.sans],
         semibold: ['"SukhumvitSet-SemiBold"', ...fontFamily.sans],
         bold: ['"SukhumvitSet-Bold"', ...fontFamily.sans],
-        extrabold: ['"SukhumvitSet-ExtraBold"', ...fontFamily.sans],
+        // Map extrabold to Bold since ExtraBold file is not present
+        extrabold: ['"SukhumvitSet-Bold"', ...fontFamily.sans],
         display: ['"SukhumvitSet-SemiBold"', ...fontFamily.sans],
       },
     },

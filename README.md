@@ -23,3 +23,17 @@ A lightweight Expo prototype inspired by JobToday that showcases distinct seeker
 - `src/shared/data/mockData.js` houses static sample content that can later be replaced with API data.
 
 Feel free to extend the mock data, connect real APIs, or add authentication to build out a production-ready experience.
+
+## Backend function (optional)
+
+This repo includes a lightweight Express backend under `function/` that uses `firebase-admin` for server‑side tasks (e.g., role enforcement, protected reads/writes).
+
+Setup:
+- Copy env: `cp function/.env.example function/.env` and fill your Firebase service account fields.
+- Start API: `cd function && npm i && npm run dev` (listens on `http://localhost:4000`).
+- Point the app to it by setting `EXPO_PUBLIC_API_BASE_URL` in the root `.env` (use your LAN IP or a tunnel URL).
+
+Client flow:
+- App signs in with Firebase Auth.
+- Fetch ID token via `auth.currentUser.getIdToken()`.
+- Call the backend with header `Authorization: Bearer <ID_TOKEN>`.

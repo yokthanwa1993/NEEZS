@@ -4,23 +4,19 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '../../shared/components/Typography';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { updateProfile } from 'firebase/auth';
-import { auth } from '../../shared/config/firebase';
+import * as userApi from '../../shared/services/userApi';
 
 const ProfileEditScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const user = auth.currentUser;
-  const [name, setName] = useState(user?.displayName || '');
+  const [name, setName] = useState(route.params?.displayName || '');
   const [bio, setBio] = useState(route.params?.bio || '');
   const [saving, setSaving] = useState(false);
 
   const onSave = async () => {
     try {
       setSaving(true);
-      if (user && name !== user.displayName) {
-        await updateProfile(user, { displayName: name });
-      }
+      await userApi.upsertUser({ displayName: name, bio });
       // ส่ง bio กลับไปที่หน้าโปรไฟล์เพื่ออัปเดต UI
       navigation.navigate('MainTabs');
       navigation.emit({ type: 'setParams', target: navigation.getState()?.routes?.find(r => r.name === 'MainTabs')?.key, data: {} });
@@ -78,4 +74,3 @@ const styles = StyleSheet.create({
 });
 
 export default ProfileEditScreen;
-
