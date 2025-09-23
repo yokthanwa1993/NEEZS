@@ -12,7 +12,7 @@ const general = [
 const recruiting = [
   { id: 'r1', icon: 'person-add-outline', color: '#34d399', title: 'มีผู้สมัครใหม่ (Barista)', time: 'วันนี้ | 10:12', desc: 'ปิยะวดี ธรรมรักษ์ ส่งใบสมัครสำหรับตำแหน่ง Barista', isNew: true },
   { id: 'r2', icon: 'chatbubble-ellipses-outline', color: '#38bdf8', title: 'ข้อความใหม่จากผู้สมัคร', time: 'เมื่อสักครู่', desc: 'ณัฐธิดา กิมกิตติเจริญ: ขอรายละเอียดเวลาทำงานเพิ่มค่ะ' },
-  { id: 'r3', icon: 'calendar-outline', color: '#f59e0b', title: 'ยืนยันนัดสัมภาษณ์', time: 'พรุ่งนี้ | 09:00', desc: 'วีรยุทธ กล้าหาญ ตอบรับสัมภาษณ์ตำแหน่ง พนักงานหน้าร้าน' },
+  { id: 'r3', icon: 'calendar-outline', color: '#FFA500', title: 'ยืนยันนัดสัมภาษณ์', time: 'พรุ่งนี้ | 09:00', desc: 'วีรยุทธ กล้าหาญ ตอบรับสัมภาษณ์ตำแหน่ง พนักงานหน้าร้าน' },
 ];
 
 const TabButton = ({ label, active, onPress }) => (
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
   tabBtn: { marginRight: 20 },
   tabLabel: { color: '#374151' },
   tabLabelActive: { color: '#111827' },
-  tabUnderline: { height: 3, backgroundColor: '#f5c518', marginTop: 6, borderRadius: 2 },
+  tabUnderline: { height: 3, backgroundColor: '#FFA500', marginTop: 6, borderRadius: 2 },
   card: { flexDirection: 'row', backgroundColor: '#ffffff', borderRadius: 16, padding: 14, borderWidth: StyleSheet.hairlineWidth, borderColor: '#e5e7eb' },
   iconCircle: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
   newPill: { backgroundColor: '#2563eb', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },

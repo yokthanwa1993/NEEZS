@@ -260,7 +260,7 @@ const SeekerProfileScreen = () => {
                 <Ionicons name="logo-google" size={18} color="#111827" />
               </View>
               <Text weight={700} style={{ color: '#111827', flex: 1 }}>Google</Text>
-              <Text weight={700} style={{ color: '#f5c518' }}>เชื่อมต่อ</Text>
+              <Text weight={700} style={{ color: '#FFA500' }}>เชื่อมต่อ</Text>
             </View>
           </View>
         </View>
@@ -396,7 +396,7 @@ const SeekerProfileScreen = () => {
               </View>
               <View style={{ flexDirection: 'row', marginTop: 6 }}>
                 {[1,2,3,4,5].map((i) => (
-                  <Ionicons key={i} name={i <= rv.rating ? 'star' : 'star-outline'} size={16} color="#f5c518" style={{ marginRight: 2 }} />
+                  <Ionicons key={i} name={i <= rv.rating ? 'star' : 'star-outline'} size={16} color="#FFA500" style={{ marginRight: 2 }} />
                 ))}
               </View>
               <Text style={{ color: '#374151', marginTop: 8 }}>{rv.text}</Text>
@@ -453,7 +453,7 @@ const styles = StyleSheet.create({
   bio: { color: '#475569', marginTop: 8, flex: 1, lineHeight: 20 },
   actionsRow: { flexDirection: 'row', paddingHorizontal: 20, marginTop: 14 },
   actionButton: { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-  actionPrimary: { backgroundColor: '#f5c518', marginRight: 10 },
+  actionPrimary: { backgroundColor: '#FFA500', marginRight: 10 },
   actionSecondary: { backgroundColor: '#f3f4f6', marginLeft: 10 },
   actionTextPrimary: { color: '#111827' },
   actionTextSecondary: { color: '#111827' },
@@ -470,7 +470,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 12,
-    backgroundColor: '#fde68a',
+    backgroundColor: '#FFD28A',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
@@ -522,7 +522,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 8,
   },
-  addBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fde68a', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 10 },
+  addBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFD28A', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 10 },
   reviewHeader: { flexDirection: 'row', alignItems: 'center' },
   reviewAvatar: { width: 36, height: 36, borderRadius: 18 },
   reviewImagesRow: { flexDirection: 'row', marginTop: 10 },
@@ -530,11 +530,11 @@ const styles = StyleSheet.create({
   // portfolio styles
   portCard: { backgroundColor: '#ffffff', borderRadius: 16, borderWidth: StyleSheet.hairlineWidth, borderColor: '#e5e7eb', marginBottom: 14, overflow: 'hidden' },
   portCover: { width: '100%', height: 160 },
-  publicBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fde68a', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 999 },
+  publicBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFD28A', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 999 },
   pillsRow: { flexDirection: 'row', flexWrap: 'wrap', marginTop: 8 },
   pill: { backgroundColor: '#f3f4f6', borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4, marginRight: 8, marginBottom: 6 },
   portThumb: { width: 72, height: 72, borderRadius: 10, marginRight: 8 },
-  primaryBtn: { backgroundColor: '#fde68a', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 10, marginLeft: 8 },
+  primaryBtn: { backgroundColor: '#FFD28A', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 10, marginLeft: 8 },
   secondaryBtn: { backgroundColor: '#f3f4f6', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 10 },
   // work history styles
   whCard: { backgroundColor: '#ffffff', borderRadius: 16, borderWidth: StyleSheet.hairlineWidth, borderColor: '#e5e7eb', marginBottom: 14, padding: 12 },

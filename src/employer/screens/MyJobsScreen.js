@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Text } from '../../shared/components/Typography';
 import { employerJobs as seedJobs } from '../../shared/data/mockData';
 
-const BRAND = '#f5c518';
+const BRAND = '#FFA500';
 
 const StatusPill = ({ status }) => {
   const map = {
@@ -121,7 +121,7 @@ const MyJobsScreen = () => {
       <View style={styles.statsRow}>
         <StatCard icon="briefcase-outline" label="ประกาศทั้งหมด" value={stats.total} color="#0ea5e9" />
         <StatCard icon="checkmark-circle-outline" label="เปิดรับ" value={stats.open} color="#22c55e" />
-        <StatCard icon="chatbubbles-outline" label="สัมภาษณ์" value={stats.interviewing} color="#f59e0b" />
+        <StatCard icon="chatbubbles-outline" label="สัมภาษณ์" value={stats.interviewing} color="#FFA500" />
         <StatCard icon="people-outline" label="ผู้สมัครทั้งหมด" value={stats.applicants} color="#6366f1" />
       </View>
 

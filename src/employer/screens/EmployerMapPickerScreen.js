@@ -138,7 +138,7 @@ export default function EmployerMapPickerScreen() {
       <View style={{ flex: 1 }}>
         {loading ? (
           <View style={styles.center}>
-            <ActivityIndicator size="large" color="#f5c518" />
+            <ActivityIndicator size="large" color="#FFA500" />
           </View>
         ) : (
           <MapView
@@ -161,7 +161,7 @@ export default function EmployerMapPickerScreen() {
 
         {/* Center pin */}
         <View pointerEvents="none" style={styles.centerPinWrapper}>
-          <Ionicons name="location" size={36} color="#16a34a" style={{ textShadowColor: '#00000055', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 4 }} />
+          <Ionicons name="location" size={36} color="#FFA500" style={{ textShadowColor: '#00000055', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 4 }} />
         </View>
 
         {/* My location button */}

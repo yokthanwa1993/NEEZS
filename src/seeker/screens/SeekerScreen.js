@@ -58,7 +58,7 @@ const SeekerScreen = ({ navigation }) => {
             {/* Header gradient (เข้มแบบแอปตัวอย่าง) */}
             <View style={styles.headerWrap}>
               <LinearGradient
-                colors={["#fff7cc", "#fde047", "#f5c518", "#f59e0b"]}
+                colors={["#FFE8B3", "#FFD28A", "#FFA500", "#FF8C00"]}
                 locations={[0, 0.35, 0.7, 1]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
@@ -80,11 +80,11 @@ const SeekerScreen = ({ navigation }) => {
               </LinearGradient>
             </View>
 
-            {/* Promo yellow card (เติมพื้นที่ขาวแบบตัวอย่าง) */}
-            <LinearGradient colors={["#fde68a", "#f5c518"]} start={{x:0,y:0}} end={{x:1,y:1}} style={[styles.promoCard, { marginTop: 12 }]}>
+            {/* Promo orange card */}
+            <LinearGradient colors={["#FFD28A", "#FFA500"]} start={{x:0,y:0}} end={{x:1,y:1}} style={[styles.promoCard, { marginTop: 12 }]}>
               <View style={{ flex: 1 }}>
-                <Text weight={800} style={{ color: '#111827', fontSize: 20 }}>หางานให้เจอเร็วขึ้น!</Text>
-                <Text style={{ color: '#111827', opacity: 0.9, marginTop: 6 }}>ดูเคล็ดลับสมัครงานและจัด{`\n`}โปรไฟล์ให้โดน</Text>
+                <Text weight={800} style={{ color: '#ffffff', fontSize: 20 }}>หางานให้เจอเร็วขึ้น!</Text>
+                <Text style={{ color: '#ffffff', opacity: 0.95, marginTop: 6 }}>ดูเคล็ดลับสมัครงานและจัด{`\n`}โปรไฟล์ให้โดน</Text>
                 <TouchableOpacity style={styles.promoBtn}>
                   <Text weight={700} style={{ color: '#111827' }}>อ่านเพิ่ม</Text>
                 </TouchableOpacity>
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
   bannerImage: { width: '100%', height: '100%' },
   dotsRow: { flexDirection: 'row', justifyContent: 'center', marginTop: 4, marginBottom: 6 },
   dot2: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#e5e7eb', marginHorizontal: 3 },
-  dot2Active: { backgroundColor: '#f5c518' },
+  dot2Active: { backgroundColor: '#FFA500' },
   promoCard: { flexDirection: 'row', alignItems: 'center', borderRadius: 16, padding: 16, marginBottom: 16 },
   promoBtn: { backgroundColor: '#ffffff', paddingHorizontal: 14, paddingVertical: 10, borderRadius: 12, marginTop: 12, alignSelf: 'flex-start' },
   promoImage: { width: 110, height: 110, borderRadius: 12, marginLeft: 12 },

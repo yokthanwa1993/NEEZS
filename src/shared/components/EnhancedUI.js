@@ -20,8 +20,8 @@ export const Button = ({
     switch (variant) {
       case 'primary':
         return {
-          backgroundColor: '#f5c518',
-          shadowColor: '#f5c518',
+          backgroundColor: '#FFA500',
+          shadowColor: '#FFA500',
           shadowOffset: { width: 0, height: 4 },
           shadowOpacity: 0.3,
           shadowRadius: 8,
@@ -57,7 +57,7 @@ export const Button = ({
   const getTextColor = () => {
     switch (variant) {
       case 'primary':
-        return '#111827';
+        return '#ffffff';
       case 'secondary':
       case 'google':
         return '#374151';

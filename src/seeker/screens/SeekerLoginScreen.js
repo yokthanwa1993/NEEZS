@@ -76,7 +76,7 @@ export default function SeekerLoginScreen({ navigation }) {
   };
 
   return (
-    <LinearGradient colors={["#fff7cc", "#fde047"]} style={{ flex: 1 }}>
+    <LinearGradient colors={["#FFE8B3", "#FFD28A"]} style={{ flex: 1 }}>
       <SafeAreaView style={{ flex: 1 }}>
         <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
@@ -95,12 +95,12 @@ export default function SeekerLoginScreen({ navigation }) {
                 style={{
                   width: 80,
                   height: 80,
-                  backgroundColor: '#f59e0b',
+                  backgroundColor: '#FFA500',
                   borderRadius: 40,
                   alignItems: 'center',
                   justifyContent: 'center',
                   marginBottom: 16,
-                  shadowColor: '#f59e0b',
+                  shadowColor: '#FFA500',
                   shadowOffset: { width: 0, height: 4 },
                   shadowOpacity: 0.3,
                   shadowRadius: 8,
@@ -206,12 +206,12 @@ export default function SeekerLoginScreen({ navigation }) {
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  backgroundColor: '#f5c518',
+                  backgroundColor: '#FFA500',
                   borderRadius: 12,
                   paddingVertical: 14,
                   paddingHorizontal: 24,
                   marginBottom: 12,
-                  shadowColor: '#f5c518',
+                  shadowColor: '#FFA500',
                   shadowOffset: { width: 0, height: 4 },
                   shadowOpacity: 0.3,
                   shadowRadius: 8,
@@ -270,9 +270,9 @@ export default function SeekerLoginScreen({ navigation }) {
             <View style={{ alignItems: 'center', marginTop: 8 }}>
               <Text style={{ color: '#6b7280', fontSize: 13, textAlign: 'center', lineHeight: 20 }}>
                 การเข้าสู่ระบบถือว่าคุณยอมรับ{'\n'}
-                <Text style={{ color: '#f59e0b', fontWeight: '500' }}>ข้อกำหนดการใช้งาน</Text>
+                <Text style={{ color: '#FFA500', fontWeight: '500' }}>ข้อกำหนดการใช้งาน</Text>
                 {' และ '}
-                <Text style={{ color: '#f59e0b', fontWeight: '500' }}>นโยบายความเป็นส่วนตัว</Text>
+                <Text style={{ color: '#FFA500', fontWeight: '500' }}>นโยบายความเป็นส่วนตัว</Text>
               </Text>
             </View>
 

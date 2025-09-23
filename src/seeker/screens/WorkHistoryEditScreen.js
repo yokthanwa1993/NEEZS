@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Text } from '../../shared/components/Typography';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
-const BRAND = '#f5c518';
+const BRAND = '#FFA500';
 
 export default function WorkHistoryEditScreen() {
   const navigation = useNavigation();
@@ -135,7 +135,7 @@ export default function WorkHistoryEditScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#ffffff' },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, paddingVertical: 8, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#e5e7eb' },
-  saveBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fde68a', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 10 },
+  saveBtn: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFD28A', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 10 },
   headerTitle: { color: '#111827', fontSize: 16 },
   formRow: { marginTop: 14 },
   doubleRow: { flexDirection: 'row' },
@@ -145,7 +145,6 @@ const styles = StyleSheet.create({
   image: { width: 92, height: 92, borderRadius: 12, backgroundColor: '#f3f4f6' },
   addTile: { alignItems: 'center', justifyContent: 'center' },
   removeBtn: { position: 'absolute', top: 4, right: 4, backgroundColor: 'rgba(0,0,0,0.5)', width: 20, height: 20, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
-  primaryBtn: { backgroundColor: '#fde68a', paddingHorizontal: 12, paddingVertical: 10, borderRadius: 10, marginLeft: 8 },
+  primaryBtn: { backgroundColor: '#FFD28A', paddingHorizontal: 12, paddingVertical: 10, borderRadius: 10, marginLeft: 8 },
   addRow: { flexDirection: 'row', alignItems: 'center', marginTop: 10 },
 });
-

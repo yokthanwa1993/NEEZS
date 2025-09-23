@@ -13,7 +13,7 @@ const initialMessages = [
   { id: 'm5', text: 'เป็นแอปแชท กำลังทำฟีเจอร์ข้อความอยู่ครับ', time: '16:04', me: false },
 ];
 
-const BRAND = '#f5c518';
+const BRAND = '#FFA500';
 const LIGHT = '#FEF9C3';
 
 const Bubble = ({ msg, avatar }) => {
@@ -33,7 +33,7 @@ const Bubble = ({ msg, avatar }) => {
         <Text style={[styles.bubbleText, isMe && { color: '#ffffff' }]}>{msg.text}</Text>
         <View style={styles.timeRow}> 
           <Text style={[styles.timeText, isMe && { color: '#fef3c7' }]}>{msg.time}</Text>
-          {isMe ? <Ionicons name="checkmark-done" size={14} color="#fde68a" style={{ marginLeft: 4 }} /> : null}
+          {isMe ? <Ionicons name="checkmark-done" size={14} color="#FFD28A" style={{ marginLeft: 4 }} /> : null}
         </View>
       </View>
     </View>

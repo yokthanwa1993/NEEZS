@@ -21,8 +21,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
   },
   pillActive: {
-    backgroundColor: '#f5c518',
-    borderColor: '#f5c518',
+    backgroundColor: '#FFA500',
+    borderColor: '#FFA500',
   },
   pillPressed: {
     opacity: 0.85,

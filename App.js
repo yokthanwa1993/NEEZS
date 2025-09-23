@@ -69,7 +69,7 @@ const navigationTheme = {
     ...DefaultTheme.colors,
     background: '#ffffff',
     card: '#ffffff',
-    primary: '#f5c518',
+    primary: '#FFA500',
     border: '#e2e8f0',
     text: '#111827',
   },
@@ -177,7 +177,7 @@ const EmployerTabs = () => (
                 width: 52,
                 height: 52,
                 borderRadius: 26,
-                backgroundColor: '#f5c518',
+                backgroundColor: '#FFA500',
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
@@ -236,7 +236,7 @@ const AppNavigator = () => {
   if (booting) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#f5c518" />
+        <ActivityIndicator size="large" color="#FFA500" />
       </View>
     );
   }
@@ -298,7 +298,7 @@ const App = () => {
   if (!fontsLoaded) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#f5c518" />
+        <ActivityIndicator size="large" color="#FFA500" />
       </View>
     );
   }

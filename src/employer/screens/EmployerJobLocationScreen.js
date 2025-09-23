@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Text } from '../../shared/components/Typography';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
-const BRAND = '#f5c518';
+const BRAND = '#FFA500';
 
 const OptionCard = ({ icon, title, desc, active, onPress }) => (
   <Pressable onPress={onPress} style={({ pressed }) => [styles.card, active && styles.cardActive, pressed && { opacity: 0.9 }]}>
@@ -95,12 +95,12 @@ const styles = StyleSheet.create({
   inlineIcon: { width: 28, height: 28, borderRadius: 8, alignItems: 'center', justifyContent: 'center', marginRight: 8 },
   headerTitle: { color: '#111827', fontSize: 20 },
   card: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#ffffff', borderRadius: 14, borderWidth: StyleSheet.hairlineWidth, borderColor: '#e5e7eb', padding: 14, marginTop: 10 },
-  cardActive: { borderColor: '#fde68a', backgroundColor: '#fffbeb' },
+  cardActive: { borderColor: '#FFD28A', backgroundColor: '#FFF4DB' },
   iconCircle: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
   divider: { height: 1, backgroundColor: '#e5e7eb', marginTop: 18, marginBottom: 12 },
   nextBtn: { borderRadius: 12, paddingVertical: 14, alignItems: 'center', justifyContent: 'center' },
   nextEnabled: { backgroundColor: BRAND },
-  nextDisabled: { backgroundColor: '#fde68a' },
+  nextDisabled: { backgroundColor: '#FFD28A' },
   nextTextEnabled: { color: '#111827', fontSize: 18 },
   nextTextDisabled: { color: '#4b5563', fontSize: 18 },
 });

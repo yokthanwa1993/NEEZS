@@ -6,7 +6,7 @@ import { Text } from '../../shared/components/Typography';
 import { useRoute, useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
-const BRAND = '#f5c518';
+const BRAND = '#FFA500';
 
 const Dot = ({ active }) => (
   <View style={[styles.dot, active && styles.dotActive]} />
@@ -118,10 +118,9 @@ const styles = StyleSheet.create({
   dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: 'rgba(255,255,255,0.6)', marginHorizontal: 3 },
   dotActive: { backgroundColor: BRAND },
   contentBox: { padding: 16 },
-  publicBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fde68a', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 999 },
+  publicBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFD28A', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 999 },
   pill: { backgroundColor: '#f3f4f6', borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4, marginRight: 8, marginTop: 6 },
   bottomBar: { flexDirection: 'row', justifyContent: 'flex-end', padding: 12, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: '#e5e7eb' },
-  primaryBtn: { backgroundColor: '#fde68a', paddingHorizontal: 16, paddingVertical: 10, borderRadius: 10, marginLeft: 8 },
+  primaryBtn: { backgroundColor: '#FFD28A', paddingHorizontal: 16, paddingVertical: 10, borderRadius: 10, marginLeft: 8 },
   secondaryBtn: { backgroundColor: '#f3f4f6', paddingHorizontal: 16, paddingVertical: 10, borderRadius: 10 },
 });
-

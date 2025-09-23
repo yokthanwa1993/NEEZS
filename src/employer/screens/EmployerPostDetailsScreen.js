@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Text } from '../../shared/components/Typography';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
-const BRAND = '#f5c518';
+const BRAND = '#FFA500';
 
 const AddTile = ({ onPress }) => (
   <Pressable onPress={onPress} style={({ pressed }) => [styles.addTile, pressed && { opacity: 0.9 }]}>

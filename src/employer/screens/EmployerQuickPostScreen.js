@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Text, TextInput as AppTextInput } from '../../shared/components/Typography';
 import { useNavigation } from '@react-navigation/native';
 
-const BRAND = '#f5c518';
+const BRAND = '#FFA500';
 
 const EmployerQuickPostScreen = () => {
   const [prompt, setPrompt] = useState('');
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
   divider: { height: 1, backgroundColor: '#e5e7eb', marginTop: 12, marginBottom: 12 },
   ctaBtn: { borderRadius: 12, paddingVertical: 14, alignItems: 'center', justifyContent: 'center' },
   ctaEnabled: { backgroundColor: BRAND },
-  ctaDisabled: { backgroundColor: '#fde68a' },
+  ctaDisabled: { backgroundColor: '#FFD28A' },
   ctaTextEnabled: { color: '#111827', fontSize: 18 },
   ctaTextDisabled: { color: '#4b5563', fontSize: 18 },
   topBar: { position: 'absolute', top: 8, left: 16, right: 16, zIndex: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },

@@ -168,9 +168,9 @@ const styles = StyleSheet.create({
     borderColor: '#eef2f7',
   },
   avatar: { width: 44, height: 44, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
-  unreadPill: { marginTop: 6, backgroundColor: '#f5c518', minWidth: 22, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 6 },
-  trashBox: { marginLeft: 10, backgroundColor: '#FEF9C3', borderRadius: 16, padding: 12, borderWidth: StyleSheet.hairlineWidth, borderColor: '#fde68a' },
-  swipeAction: { width: 64, height: '80%', backgroundColor: '#fde68a', borderRadius: 12, justifyContent: 'center', alignItems: 'center', alignSelf: 'center' },
+  unreadPill: { marginTop: 6, backgroundColor: '#FFA500', minWidth: 22, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 6 },
+  trashBox: { marginLeft: 10, backgroundColor: '#FFF4DB', borderRadius: 16, padding: 12, borderWidth: StyleSheet.hairlineWidth, borderColor: '#FFD28A' },
+  swipeAction: { width: 64, height: '80%', backgroundColor: '#FFD28A', borderRadius: 12, justifyContent: 'center', alignItems: 'center', alignSelf: 'center' },
   swipePress: { justifyContent: 'center' },
 });
 

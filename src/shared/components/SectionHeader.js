@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text } from './Typography';
 
-const SectionHeader = ({ title, actionLabel, onActionPress, color = '#111827', actionColor = '#f5c518' }) => {
+const SectionHeader = ({ title, actionLabel, onActionPress, color = '#111827', actionColor = '#FFA500' }) => {
   return (
     <View style={styles.container}>
       <Text weight={700} style={[styles.title, { color }]}>{title}</Text>

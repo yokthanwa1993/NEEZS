@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
   tabBtn: { marginRight: 20 },
   tabLabel: { color: '#374151' },
   tabLabelActive: { color: '#111827' },
-  tabUnderline: { height: 3, backgroundColor: '#f5c518', marginTop: 6, borderRadius: 2 },
+  tabUnderline: { height: 3, backgroundColor: '#FFA500', marginTop: 6, borderRadius: 2 },
   card: { flexDirection: 'row', backgroundColor: '#ffffff', borderRadius: 16, padding: 14, borderWidth: StyleSheet.hairlineWidth, borderColor: '#e5e7eb' },
   iconCircle: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
   newPill: { backgroundColor: '#2563eb', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
