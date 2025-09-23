@@ -4,11 +4,14 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Linking from 'expo-linking';
+import * as WebBrowser from 'expo-web-browser';
+import * as authApi from '../../shared/services/authApi';
+
+WebBrowser.maybeCompleteAuthSession();
 import { Ionicons } from '@expo/vector-icons';
 import { Text, H1 } from '../../shared/components/Typography';
 import { Button, Card } from '../../shared/components/EnhancedUI';
-// Switch to API-only auth
-import * as authApi from '../../shared/services/authApi';
 
 export default function SeekerLoginScreen({ navigation }) {
   const insets = useSafeAreaInsets();
@@ -31,11 +34,10 @@ export default function SeekerLoginScreen({ navigation }) {
       // ตั้งค่า portal ก่อน เพื่อให้ Root navigator เลือก stack ที่ถูกต้องเมื่อ auth เปลี่ยนสถานะ
       try { await AsyncStorage.setItem('NEEZS_PORTAL', 'seeker'); } catch {}
       const result = await authApi.loginWithEmail({ email, password, role: 'seeker' });
-      if (!result?.token) {
+      if (!result?.access_token) {
         Alert.alert('ข้อผิดพลาด', result?.error || 'เข้าสู่ระบบไม่สำเร็จ');
       } else {
-        // ไปหน้าหลักของ Seeker ทันที
-        navigation.reset({ index: 0, routes: [{ name: 'MainTabs' }] });
+        // AppNavigator will flip automatically after context updates
       }
     } catch (error) {
       Alert.alert('ข้อผิดพลาด', 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ');
@@ -48,7 +50,20 @@ export default function SeekerLoginScreen({ navigation }) {
     setLoading(true);
     try {
       try { await AsyncStorage.setItem('NEEZS_PORTAL', 'seeker'); } catch {}
-      Alert.alert('ยังไม่พร้อมใช้งาน', 'เข้าสู่ระบบด้วย Google จะย้ายไปทำที่ backend ในขั้นถัดไป');
+      const base = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:3000';
+      const path = process.env.EXPO_PUBLIC_OAUTH_REDIRECT_PATH || 'auth-callback';
+      const appRedirect = Linking.createURL(path);
+      const url = `${base}/auth/google/start?role=seeker&app_redirect=${encodeURIComponent(appRedirect)}`;
+      const result = await WebBrowser.openAuthSessionAsync(url, appRedirect);
+      if (result.type === 'success' && result.url) {
+        const { queryParams } = Linking.parse(result.url);
+        const at = queryParams?.access_token;
+        const rt = queryParams?.refresh_token;
+        if (at || rt) {
+          await authApi.setTokens({ access_token: at, refresh_token: rt });
+          // AppNavigator will flip automatically after context updates
+        }
+      }
     } catch (error) {
       Alert.alert('ข้อผิดพลาด', 'เกิดข้อผิดพลาดในการเข้าสู่ระบบด้วย Google');
     } finally {
@@ -71,7 +86,7 @@ export default function SeekerLoginScreen({ navigation }) {
               paddingHorizontal: 20,
               paddingTop: 12,
               paddingBottom: 12,
-              justifyContent: 'space-between',
+              justifyContent: 'center',
             }}
           >
             {/* Header with Icon */}

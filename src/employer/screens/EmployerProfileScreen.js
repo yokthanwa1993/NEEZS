@@ -17,7 +17,7 @@ const Row = ({ icon, label, value, onPress }) => (
   </TouchableOpacity>
 );
 
-const EmployerProfileScreen = () => {
+const EmployerProfileScreen = ({ navigation }) => {
   const { user } = useEmployerAuth();
   const name = user?.displayName || 'ธุรกิจของฉัน';
   const email = user?.email || 'ไม่ระบุ';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import ScreenContainer from '../components/ScreenContainer';
 import { Ionicons } from '@expo/vector-icons';
 import { Text, H1, H2, MediumText } from '../components/Typography';
 
@@ -10,7 +10,7 @@ const WelcomeScreen = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <ScreenContainer center>
       <View style={styles.container}>
         <View style={styles.logoWrapper}>
           <View style={styles.logoBadge}>
@@ -50,19 +50,13 @@ const WelcomeScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </View>
-    </SafeAreaView>
+    </ScreenContainer>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-  },
   container: {
-    flex: 1,
     paddingHorizontal: 24,
-    justifyContent: 'center',
   },
   logoWrapper: {
     alignItems: 'center',

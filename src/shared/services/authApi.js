@@ -1,21 +1,27 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { apiFetch } from './apiClient';
+import * as tokenStore from './tokenStore';
 
-const TOKEN_KEY = 'NEEZS_APP_TOKEN';
 
 export async function loginWithEmail({ email, password, role }) {
   const res = await apiFetch('/auth/login', { method: 'POST', body: { email, password, role }, auth: false });
-  await AsyncStorage.setItem(TOKEN_KEY, res.token);
+  await tokenStore.setTokens({ access_token: res.access_token, refresh_token: res.refresh_token });
   return res;
 }
 
 export async function logout() {
-  await AsyncStorage.removeItem(TOKEN_KEY);
+  await tokenStore.clearTokens();
 }
 
 export async function getToken() {
-  return AsyncStorage.getItem(TOKEN_KEY);
+  return tokenStore.getAccessToken();
+}
+
+export async function getRefreshToken() {
+  return tokenStore.getRefreshToken();
+}
+
+export async function setTokens({ access_token, refresh_token }) {
+  await tokenStore.setTokens({ access_token, refresh_token });
 }
 
 export default { loginWithEmail, logout, getToken };
-

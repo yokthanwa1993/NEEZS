@@ -12,6 +12,17 @@
     "plugins": [
       "expo-font",
       "expo-web-browser"
-    ]
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "แอปต้องการเข้าถึงคลังรูปภาพของคุณเพื่อแนบรูปภาพไปกับประกาศงาน",
+        "NSCameraUsageDescription": "แอปต้องการใช้กล้องเพื่อถ่ายรูปประกอบประกาศงาน",
+        "NSLocationWhenInUseUsageDescription": "แอปต้องการเข้าถึงตำแหน่งของคุณเพื่อปักหมุดสถานที่ทำงานบนแผนที่"
+      }
+    },
+    "android": {
+      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"]
+    }
   }
 }

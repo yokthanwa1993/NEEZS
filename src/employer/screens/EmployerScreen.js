@@ -8,7 +8,7 @@ import ApplicantCard from '../components/ApplicantCard';
 import { employerJobs, highlightedApplicants } from '../../shared/data/mockData';
 import * as authApi from '../../shared/services/authApi';
 
-const EmployerScreen = () => {
+const EmployerScreen = ({ navigation }) => {
   const handleSignOut = async () => {
     Alert.alert(
       'ออกจากระบบ',

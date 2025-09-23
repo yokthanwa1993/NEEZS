@@ -1,11 +1,13 @@
 import 'react-native-gesture-handler';
 import React, { useCallback, useEffect } from 'react';
+import * as Linking from 'expo-linking';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer, DefaultTheme, createNavigationContainerRef } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
+import RoundPlus from './src/shared/components/RoundPlus';
 import { useFonts } from 'expo-font';
 // Ensure icon font is preloaded on web
 // Vendor path provided by @expo/vector-icons for web bundling
@@ -39,8 +41,14 @@ import MyJobsScreen from './src/employer/screens/MyJobsScreen';
 import EmployerChatScreen from './src/employer/screens/EmployerChatScreen';
 import EmployerNotificationsScreen from './src/employer/screens/EmployerNotificationsScreen';
 import EmployerProfileScreen from './src/employer/screens/EmployerProfileScreen';
+import EmployerQuickPostScreen from './src/employer/screens/EmployerQuickPostScreen';
+import EmployerPostDetailsScreen from './src/employer/screens/EmployerPostDetailsScreen';
+import EmployerJobLocationScreen from './src/employer/screens/EmployerJobLocationScreen';
+import EmployerMapPickerScreen from './src/employer/screens/EmployerMapPickerScreen';
 import * as authApi from './src/shared/services/authApi';
-import * as userApi from './src/shared/services/userApi';
+import { useSeekerAuth } from './src/seeker/contexts/SeekerAuthContext';
+import { useEmployerAuth } from './src/employer/contexts/EmployerAuthContext';
+import { authEvents } from './src/shared/services/authEvents';
 
 // ปิด warnings ที่ไม่จำเป็น
 LogBox.ignoreLogs([
@@ -119,6 +127,8 @@ const MainTabs = () => (
 
 const EmployerTabs = () => (
   <Tab.Navigator
+    tabBar={(props) => <BottomTabBar {...props} />}
+    initialRouteName="PostJob"
     screenOptions={({ route }) => ({
       headerShown: false,
       tabBarIcon: ({ color, size, focused }) => {
@@ -140,31 +150,43 @@ const EmployerTabs = () => (
     <Tab.Screen name="EmployerChat" component={EmployerChatScreen} options={{ tabBarLabel: 'แชท' }} />
     <Tab.Screen
       name="PostJob"
-      component={() => null} // Placeholder for the '+' button action
+      component={EmployerQuickPostScreen}
       options={{
         tabBarLabel: '',
         tabBarIcon: () => (
           <View style={{
-            backgroundColor: '#f5c518',
-            width: 56,
-            height: 56,
-            borderRadius: 28,
-            justifyContent: 'center',
+            marginTop: -22,
+            shadowColor: '#000',
+            shadowOpacity: 0.12,
+            shadowRadius: 8,
+            shadowOffset: { width: 0, height: 4 },
+            elevation: 6,
+            backgroundColor: 'transparent',
             alignItems: 'center',
-            marginTop: -20,
+            justifyContent: 'center',
           }}>
-            <Ionicons name="add" size={32} color="#fff" />
+            <View style={{
+              width: 60,
+              height: 60,
+              borderRadius: 30,
+              backgroundColor: '#ffffff',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <View style={{
+                width: 52,
+                height: 52,
+                borderRadius: 26,
+                backgroundColor: '#f5c518',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+                <RoundPlus size={22} thickness={4} color="#111827" />
+              </View>
+            </View>
           </View>
         ),
       }}
-      listeners={({ navigation }) => ({
-        tabPress: (e) => {
-          e.preventDefault();
-          // Navigate to the actual screen for posting a job
-          // navigation.navigate('PostJobScreen'); 
-          alert('Navigate to Post Job Screen');
-        },
-      })}
     />
     <Tab.Screen name="EmployerNotifications" component={EmployerNotificationsScreen} options={{ tabBarLabel: 'แจ้งเตือน' }} />
     <Tab.Screen name="EmployerProfile" component={EmployerProfileScreen} options={{ tabBarLabel: 'โปรไฟล์' }} />
@@ -172,31 +194,43 @@ const EmployerTabs = () => (
 );
 
 const AppNavigator = () => {
-  const [user, setUser] = React.useState(null);
   const [portal, setPortal] = React.useState(null); // 'seeker' | 'employer' | null
-  const [booting, setBooting] = React.useState(true);
+  const seeker = useSeekerAuth();
+  const employer = useEmployerAuth();
+  const user = seeker?.user || employer?.user || null;
+  const booting = (seeker?.loading ?? true) || (employer?.loading ?? true);
 
   React.useEffect(() => {
-    let mounted = true;
     (async () => {
-      try {
-        const token = await authApi.getToken();
-        if (token) {
-          try {
-            const me = await userApi.getMe();
-            if (mounted) setUser({ uid: me.id, ...(me.data || {}) });
-          } catch {
-            if (mounted) setUser(null);
-          }
-        } else {
-          if (mounted) setUser(null);
-        }
-        try { const p = await AsyncStorage.getItem('NEEZS_PORTAL'); if (mounted) setPortal(p); } catch {}
-      } finally {
-        if (mounted) setBooting(false);
-      }
+      try { const p = await AsyncStorage.getItem('NEEZS_PORTAL'); setPortal(p); } catch {}
     })();
-    return () => { mounted = false; };
+  }, []);
+
+  // keep portal in sync when auth/session changes
+  React.useEffect(() => {
+    const syncPortal = async () => {
+      try { const p = await AsyncStorage.getItem('NEEZS_PORTAL'); setPortal(p); } catch {}
+    };
+    authEvents.on('changed', syncPortal);
+    return () => authEvents.off('changed', syncPortal);
+  }, []);
+
+  // Handle OAuth callback deep links: neezs-job-app://auth-callback?access_token=...&refresh_token=...
+  React.useEffect(() => {
+    const parseAndStore = async (url) => {
+      try {
+        const { queryParams } = Linking.parse(url || '');
+        const at = queryParams?.access_token;
+        const rt = queryParams?.refresh_token;
+        if (at || rt) {
+          await authApi.setTokens({ access_token: at, refresh_token: rt });
+        }
+      } catch {}
+    };
+    const sub = Linking.addEventListener('url', ({ url }) => parseAndStore(url));
+    // also handle a possible cold start
+    Linking.getInitialURL().then((u) => u && parseAndStore(u));
+    return () => sub.remove();
   }, []);
 
   if (booting) {
@@ -208,25 +242,35 @@ const AppNavigator = () => {
   }
 
   return (
-    <SeekerAuthProvider>
-      <EmployerAuthProvider>
-        <NavigationContainer theme={navigationTheme} ref={navigationRef}>
-          <StatusBar style="dark" />
-          <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={!user ? 'Welcome' : (portal === 'employer' ? 'EmployerTabs' : 'MainTabs')}>
+    <NavigationContainer theme={navigationTheme} ref={navigationRef}>
+      <StatusBar style="dark" />
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {!user ? (
+          <>
             <Stack.Screen name="Welcome" component={WelcomeScreen} />
             <Stack.Screen name="SeekerLogin" component={SeekerLoginScreen} />
             <Stack.Screen name="EmployerLogin" component={EmployerLoginScreen} />
+          </>
+        ) : portal === 'employer' ? (
+          <>
             <Stack.Screen name="EmployerTabs" component={EmployerTabs} />
+            <Stack.Screen name="EmployerPostDetails" component={EmployerPostDetailsScreen} />
+            <Stack.Screen name="EmployerJobLocation" component={EmployerJobLocationScreen} />
+            <Stack.Screen name="EmployerMapPicker" component={EmployerMapPickerScreen} />
+            <Stack.Screen name="ChatRoom" component={ChatRoomScreen} />
+          </>
+        ) : (
+          <>
             <Stack.Screen name="MainTabs" component={MainTabs} />
             <Stack.Screen name="ChatRoom" component={ChatRoomScreen} />
             <Stack.Screen name="ProfileEdit" component={ProfileEditScreen} />
             <Stack.Screen name="Wallet" component={WalletScreen} />
             <Stack.Screen name="PortfolioDetail" component={PortfolioDetailScreen} />
             <Stack.Screen name="WorkHistoryEdit" component={WorkHistoryEditScreen} />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </EmployerAuthProvider>
-    </SeekerAuthProvider>
+          </>
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
 
@@ -261,7 +305,11 @@ const App = () => {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <AppNavigator />
+      <SeekerAuthProvider>
+        <EmployerAuthProvider>
+          <AppNavigator />
+        </EmployerAuthProvider>
+      </SeekerAuthProvider>
     </GestureHandlerRootView>
   );
 };

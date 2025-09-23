@@ -1,0 +1,93 @@
+openapi: 3.0.3
+info:
+  title: NEEZS API
+  version: 1.0.0
+  description: Backend-for-Frontend API for NEEZS apps
+servers:
+  - url: http://localhost:3000
+paths:
+  /health:
+    get:
+      summary: Healthcheck
+      responses:
+        '200': { description: OK }
+  /auth/login:
+    post:
+      summary: Email/password login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email: { type: string }
+                password: { type: string }
+                role: { type: string, enum: [seeker, employer] }
+      responses:
+        '200':
+          description: Tokens
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token: { type: string }
+                  refresh_token: { type: string }
+  /auth/refresh:
+    post:
+      summary: Exchange refresh token for a new access token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh_token: { type: string }
+      responses:
+        '200':
+          description: Access token
+  /auth/google/start:
+    get:
+      summary: Start Google OAuth
+      parameters:
+        - in: query
+          name: role
+          schema: { type: string, enum: [seeker, employer] }
+        - in: query
+          name: app_redirect
+          schema: { type: string }
+      responses:
+        '302': { description: Redirect to Google }
+  /auth/google/callback:
+    get:
+      summary: Google OAuth callback
+      responses:
+        '200': { description: Returns tokens or redirects to app with tokens }
+  /api/users/me:
+    get:
+      summary: Current user document
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: User document }
+  /api/roles/ensure:
+    post:
+      summary: Ensure current user has the role
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role: { type: string, enum: [seeker, employer] }
+      responses:
+        '200': { description: Ensured }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

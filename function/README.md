@@ -21,7 +21,7 @@ npm install
 npm run dev
 ```
 
-The API listens on `http://localhost:4000` by default.
+The API listens on `http://localhost:3000` by default.
 
 ## Endpoints (v1)
 
@@ -31,13 +31,19 @@ The API listens on `http://localhost:4000` by default.
 - `POST /api/roles/ensure` — ensure the current user has the given role and set `lastRole` (body: `{ role: 'seeker'|'employer' }`)
 - `GET /api/users/me` — get current user's document
 
+### Auth (app session tokens)
+- `POST /auth/login` — email/password → returns `{ access_token, refresh_token }`
+- `POST /auth/refresh` — refresh → `{ access_token }`
+- `GET /auth/google/start` — start Google OAuth. Query: `role`, `app_redirect` (deep link e.g. `neezs-job-app://auth-callback`).
+- `GET /auth/google/callback` — OAuth callback. Issues tokens and redirects back to `app_redirect` with `?access_token=...&refresh_token=...`.
+
 ## Client usage (Expo)
 
 Use `firebase/auth` to sign in, obtain an ID token, then call the backend:
 
 ```js
 const token = await auth.currentUser.getIdToken();
-const res = await fetch('http://localhost:4000/api/users', {
+const res = await fetch('http://localhost:3000/api/users', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
@@ -50,4 +56,14 @@ const res = await fetch('http://localhost:4000/api/users', {
 When using a device/emulator, replace `localhost` with your machine IP.
 
 Expo client config
-- In the app `.env`, set `EXPO_PUBLIC_API_BASE_URL` to your backend URL, e.g. `http://192.168.1.25:4000` for LAN or your tunnel/hosted URL.
+- In the app `.env`, set `EXPO_PUBLIC_API_BASE_URL` to your backend URL, e.g. `http://192.168.1.25:3000` for LAN or your tunnel/hosted URL.
+- Also set `EXPO_PUBLIC_OAUTH_REDIRECT_PATH=auth-callback` (default).
+
+Server env (.env)
+- `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY`
+- `FIREBASE_WEB_API_KEY`
+- `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` (OAuth web client)
+- `OAUTH_REDIRECT_BASE` (e.g. `http://localhost:3000` or `https://api.example.com`)
+- `APP_JWT_SECRET`, `APP_JWT_REFRESH_SECRET` (optional), `APP_JWT_TTL` (default `15m`), `APP_REFRESH_TTL` (default `30d`)
+- `ALLOWED_ORIGINS` for CORS
+- `HTTPS_ENABLED=1`, `HTTPS_KEY_PATH`, `HTTPS_CERT_PATH` (optional local TLS)

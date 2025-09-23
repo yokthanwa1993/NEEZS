@@ -11,7 +11,7 @@ import { jobCategories, seekerJobs } from '../../shared/data/mockData';
 import * as authApi from '../../shared/services/authApi';
 import { useSeekerAuth } from '../contexts/SeekerAuthContext';
 
-const SeekerScreen = () => {
+const SeekerScreen = ({ navigation }) => {
   const { user } = useSeekerAuth();
   const { width } = Dimensions.get('window');
   const banners = [

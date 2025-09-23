@@ -30,7 +30,7 @@ This repo includes a lightweight Express backend under `function/` that uses `fi
 
 Setup:
 - Copy env: `cp function/.env.example function/.env` and fill your Firebase service account fields.
-- Start API: `cd function && npm i && npm run dev` (listens on `http://localhost:4000`).
+- Start API: `cd function && npm i && npm run dev` (listens on `http://localhost:3000`).
 - Point the app to it by setting `EXPO_PUBLIC_API_BASE_URL` in the root `.env` (use your LAN IP or a tunnel URL).
 
 Client flow:
