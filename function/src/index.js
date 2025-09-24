@@ -182,6 +182,109 @@ app.get('/auth/google/callback', async (req, res) => {
     return res.status(500).send('Google callback failed');
   }
 });
+
+// LINE Login (OAuth 2.0 + OIDC)
+const LINE_CLIENT_ID = process.env.LINE_CLIENT_ID || process.env.LINE_CHANNEL_ID;
+const LINE_CLIENT_SECRET = process.env.LINE_CLIENT_SECRET || process.env.LINE_CHANNEL_SECRET;
+const LINE_REDIRECT = `${OAUTH_REDIRECT_BASE || ''}/auth/line/callback`;
+
+function encodeForm(data) {
+  return Object.entries(data)
+    .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+    .join('&');
+}
+
+app.get('/auth/line/start', (req, res) => {
+  try {
+    if (!LINE_CLIENT_ID || !LINE_CLIENT_SECRET || !OAUTH_REDIRECT_BASE) {
+      return res.status(500).send('LINE OAuth not configured');
+    }
+    const { role = 'seeker', app_redirect } = req.query;
+    const nonce = Math.random().toString(36).slice(2);
+    const state = toBase64Url({ role, app_redirect, nonce });
+    const url = new URL('https://access.line.me/oauth2/v2.1/authorize');
+    url.searchParams.set('response_type', 'code');
+    url.searchParams.set('client_id', LINE_CLIENT_ID);
+    url.searchParams.set('redirect_uri', LINE_REDIRECT);
+    url.searchParams.set('scope', 'openid profile email');
+    url.searchParams.set('state', state);
+    url.searchParams.set('nonce', nonce);
+    return res.redirect(url.toString());
+  } catch (e) {
+    return res.status(500).send('Failed to start LINE OAuth');
+  }
+});
+
+app.get('/auth/line/callback', async (req, res) => {
+  try {
+    const code = String(req.query.code || '');
+    const s = req.query.state;
+    const { role = 'seeker', app_redirect, nonce } = fromBase64Url(String(s || ''));
+    if (!code) return res.status(400).send('Missing code');
+    if (!LINE_CLIENT_ID || !LINE_CLIENT_SECRET || !OAUTH_REDIRECT_BASE) {
+      return res.status(500).send('LINE OAuth not configured');
+    }
+
+    // Exchange code for tokens
+    const tokenRes = await fetch('https://api.line.me/oauth2/v2.1/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: encodeForm({
+        grant_type: 'authorization_code',
+        code,
+        client_id: LINE_CLIENT_ID,
+        client_secret: LINE_CLIENT_SECRET,
+        redirect_uri: LINE_REDIRECT,
+      }),
+    });
+    const tokenJson = await tokenRes.json();
+    if (!tokenRes.ok) return res.status(401).send('LINE token exchange failed');
+    const { id_token, access_token } = tokenJson;
+    if (!id_token) return res.status(400).send('Missing LINE id_token');
+
+    // Decode id_token (not verifying signature here; recommend to verify in production)
+    const payload = JSON.parse(Buffer.from(id_token.split('.')[1], 'base64').toString('utf8'));
+    if (nonce && payload.nonce && payload.nonce !== nonce) {
+      return res.status(400).send('Invalid nonce');
+    }
+    const sub = payload.sub; // LINE user ID
+    const email = payload.email || null;
+
+    // Get profile for displayName/picture
+    let profile = {};
+    try {
+      const pr = await fetch('https://api.line.me/v2/profile', { headers: { Authorization: `Bearer ${access_token}` } });
+      profile = await pr.json();
+    } catch {}
+
+    const uid = `line:${sub}`;
+    // Ensure role in Firestore
+    try {
+      const admin = ensureAdmin();
+      const ref = admin.firestore().collection('users').doc(uid);
+      await ref.set({
+        roles: role ? { [role]: true } : {},
+        lastRole: role || null,
+        email: email,
+        displayName: profile?.displayName || null,
+        photoURL: profile?.pictureUrl || null,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      }, { merge: true });
+    } catch {}
+
+    const access_token_app = signAccessToken({ uid, email, role: role || null });
+    const refresh_token_app = signRefreshToken({ uid, email, role: role || null });
+    if (app_redirect) {
+      const url = `${app_redirect}${app_redirect.includes('?') ? '&' : '?'}access_token=${encodeURIComponent(access_token_app)}&refresh_token=${encodeURIComponent(refresh_token_app)}`;
+      return res.redirect(url);
+    }
+    return res.json({ access_token: access_token_app, refresh_token: refresh_token_app });
+  } catch (e) {
+    console.error('line callback error', e);
+    return res.status(500).send('LINE callback failed');
+  }
+});
 // Example protected route: list users collection
 app.get('/api/users', sessionMiddleware, async (req, res) => {
   try {

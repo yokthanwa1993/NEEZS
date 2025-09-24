@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
   nextBtn: { borderRadius: 12, paddingVertical: 14, alignItems: 'center', justifyContent: 'center' },
   nextEnabled: { backgroundColor: BRAND },
   nextDisabled: { backgroundColor: '#FFD28A' },
-  nextTextEnabled: { color: '#111827', fontSize: 18 },
+  nextTextEnabled: { color: '#ffffff', fontSize: 18 },
   nextTextDisabled: { color: '#4b5563', fontSize: 18 },
 });
 

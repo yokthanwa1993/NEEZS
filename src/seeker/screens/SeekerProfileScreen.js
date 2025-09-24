@@ -455,7 +455,7 @@ const styles = StyleSheet.create({
   actionButton: { flex: 1, paddingVertical: 14, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
   actionPrimary: { backgroundColor: '#FFA500', marginRight: 10 },
   actionSecondary: { backgroundColor: '#f3f4f6', marginLeft: 10 },
-  actionTextPrimary: { color: '#111827' },
+  actionTextPrimary: { color: '#ffffff' },
   actionTextSecondary: { color: '#111827' },
   card: {
     marginHorizontal: 20,

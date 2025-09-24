@@ -76,6 +76,30 @@ export default function EmployerLoginScreen({ navigation }) {
     Alert.alert('ข้อมูล', 'ฟีเจอร์สมัครสมาชิกยังไม่พร้อมใช้งาน');
   };
 
+  const handleLineLogin = async () => {
+    setLoading(true);
+    try {
+      try { await AsyncStorage.setItem('NEEZS_PORTAL','employer'); } catch {}
+      const base = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:3000';
+      const path = process.env.EXPO_PUBLIC_OAUTH_REDIRECT_PATH || 'auth-callback';
+      const appRedirect = Linking.createURL(path);
+      const url = `${base}/auth/line/start?role=employer&app_redirect=${encodeURIComponent(appRedirect)}`;
+      const result = await WebBrowser.openAuthSessionAsync(url, appRedirect);
+      if (result.type === 'success' && result.url) {
+        const { queryParams } = Linking.parse(result.url);
+        const at = queryParams?.access_token;
+        const rt = queryParams?.refresh_token;
+        if (at || rt) {
+          await authApi.setTokens({ access_token: at, refresh_token: rt });
+        }
+      }
+    } catch (error) {
+      Alert.alert('ข้อผิดพลาด', 'เกิดข้อผิดพลาดในการเข้าสู่ระบบด้วย LINE');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <LinearGradient
       colors={['#f0f9ff', '#dbeafe']}
@@ -324,6 +348,41 @@ export default function EmployerLoginScreen({ navigation }) {
                 color: '#374151'
               }}>
                 เข้าสู่ระบบด้วย Google
+              </Text>
+            </TouchableOpacity>
+
+            {/* LINE Login Button */}
+            <TouchableOpacity
+              onPress={handleLineLogin}
+              disabled={loading}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: '#06C755',
+                borderRadius: 12,
+                paddingVertical: 14,
+                paddingHorizontal: 24,
+                marginBottom: 12,
+                shadowColor: '#06C755',
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.25,
+                shadowRadius: 6,
+                elevation: 6,
+              }}
+            >
+              <Ionicons 
+                name="chatbubble-ellipses" 
+                size={20} 
+                color="#ffffff" 
+                style={{ marginRight: 12 }} 
+              />
+              <Text style={{
+                fontSize: 16,
+                fontWeight: '600',
+                color: '#ffffff'
+              }}>
+                เข้าสู่ระบบด้วย LINE
               </Text>
             </TouchableOpacity>
 

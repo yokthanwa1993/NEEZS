@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
   ctaBtn: { borderRadius: 12, paddingVertical: 14, alignItems: 'center', justifyContent: 'center' },
   ctaEnabled: { backgroundColor: BRAND },
   ctaDisabled: { backgroundColor: '#FFD28A' },
-  ctaTextEnabled: { color: '#111827', fontSize: 18 },
+  ctaTextEnabled: { color: '#ffffff', fontSize: 18 },
   ctaTextDisabled: { color: '#4b5563', fontSize: 18 },
   topBar: { position: 'absolute', top: 8, left: 16, right: 16, zIndex: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   iconBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#111827', alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 3 },

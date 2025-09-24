@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { View, StyleSheet, FlatList, TouchableOpacity, Alert, TextInput, Image, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
+// removed gradient usage for solid brand background
 import { Ionicons } from '@expo/vector-icons';
 import { Text, H1, H2, MediumText } from '../../shared/components/Typography';
 import FilterPill from '../components/FilterPill';
@@ -55,15 +55,9 @@ const SeekerScreen = ({ navigation }) => {
         contentContainerStyle={styles.contentContainer}
         ListHeaderComponent={() => (
           <View>
-            {/* Header gradient (เข้มแบบแอปตัวอย่าง) */}
+            {/* Header solid brand background */}
             <View style={styles.headerWrap}>
-              <LinearGradient
-                colors={["#FFE8B3", "#FFD28A", "#FFA500", "#FF8C00"]}
-                locations={[0, 0.35, 0.7, 1]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.headerGradient}
-              >
+              <View style={[styles.headerGradient, { backgroundColor: '#FFA500' }]}>
                 {/* address row */}
                 <View style={styles.addrRow}>
                   <Ionicons name="chevron-back" size={18} color="#111827" style={{ marginRight: 6 }} />
@@ -77,11 +71,11 @@ const SeekerScreen = ({ navigation }) => {
                   <Ionicons name="search" size={18} color="#9ca3af" />
                   <TextInput style={{ flex: 1, marginLeft: 8, color: '#111827' }} placeholder="อย่านอนถ้ายังหิว หาเงินก่อน" placeholderTextColor="#9ca3af" />
                 </View>
-              </LinearGradient>
+              </View>
             </View>
 
-            {/* Promo orange card */}
-            <LinearGradient colors={["#FFD28A", "#FFA500"]} start={{x:0,y:0}} end={{x:1,y:1}} style={[styles.promoCard, { marginTop: 12 }]}>
+            {/* Promo solid brand card */}
+            <View style={[styles.promoCard, { marginTop: 12, backgroundColor: '#FFA500' }]}>
               <View style={{ flex: 1 }}>
                 <Text weight={800} style={{ color: '#ffffff', fontSize: 20 }}>หางานให้เจอเร็วขึ้น!</Text>
                 <Text style={{ color: '#ffffff', opacity: 0.95, marginTop: 6 }}>ดูเคล็ดลับสมัครงานและจัด{`\n`}โปรไฟล์ให้โดน</Text>
@@ -93,7 +87,7 @@ const SeekerScreen = ({ navigation }) => {
                 source={{ uri: 'https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=400&auto=format&fit=crop' }}
                 style={styles.promoImage}
               />
-            </LinearGradient>
+            </View>
 
             {/* Recommendation */}
             <SectionHeader title="งานแนะนำ" actionLabel="ดูทั้งหมด" onActionPress={() => setSelectedCategory('All')} />

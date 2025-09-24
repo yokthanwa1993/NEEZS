@@ -75,8 +75,32 @@ export default function SeekerLoginScreen({ navigation }) {
     Alert.alert('ข้อมูล', 'ฟีเจอร์สมัครสมาชิกยังไม่พร้อมใช้งาน');
   };
 
+  const handleLineLogin = async () => {
+    setLoading(true);
+    try {
+      try { await AsyncStorage.setItem('NEEZS_PORTAL', 'seeker'); } catch {}
+      const base = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:3000';
+      const path = process.env.EXPO_PUBLIC_OAUTH_REDIRECT_PATH || 'auth-callback';
+      const appRedirect = Linking.createURL(path);
+      const url = `${base}/auth/line/start?role=seeker&app_redirect=${encodeURIComponent(appRedirect)}`;
+      const result = await WebBrowser.openAuthSessionAsync(url, appRedirect);
+      if (result.type === 'success' && result.url) {
+        const { queryParams } = Linking.parse(result.url);
+        const at = queryParams?.access_token;
+        const rt = queryParams?.refresh_token;
+        if (at || rt) {
+          await authApi.setTokens({ access_token: at, refresh_token: rt });
+        }
+      }
+    } catch (error) {
+      Alert.alert('ข้อผิดพลาด', 'เกิดข้อผิดพลาดในการเข้าสู่ระบบด้วย LINE');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <LinearGradient colors={["#FFE8B3", "#FFD28A"]} style={{ flex: 1 }}>
+    <LinearGradient colors={["#FFD699", "#FFA500"]} style={{ flex: 1 }}>
       <SafeAreaView style={{ flex: 1 }}>
         <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
@@ -259,6 +283,32 @@ export default function SeekerLoginScreen({ navigation }) {
                 <Ionicons name="logo-google" size={20} color="#4285f4" style={{ marginRight: 12 }} />
                 <Text style={{ fontSize: 16, fontWeight: '500', color: '#374151' }}>
                   เข้าสู่ระบบด้วย Google
+                </Text>
+              </TouchableOpacity>
+
+              {/* LINE Login Button */}
+              <TouchableOpacity
+                onPress={handleLineLogin}
+                disabled={loading}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: '#06C755',
+                  borderRadius: 12,
+                  paddingVertical: 14,
+                  paddingHorizontal: 24,
+                  marginBottom: 12,
+                  shadowColor: '#06C755',
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 6,
+                  elevation: 6,
+                }}
+              >
+                <Ionicons name="chatbubble-ellipses" size={20} color="#ffffff" style={{ marginRight: 12 }} />
+                <Text style={{ fontSize: 16, fontWeight: '600', color: '#ffffff' }}>
+                  เข้าสู่ระบบด้วย LINE
                 </Text>
               </TouchableOpacity>
 
