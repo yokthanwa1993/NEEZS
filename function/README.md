@@ -36,6 +36,8 @@ The API listens on `http://localhost:3000` by default.
 - `POST /auth/refresh` — refresh → `{ access_token }`
 - `GET /auth/google/start` — start Google OAuth. Query: `role`, `app_redirect` (deep link e.g. `neezs-job-app://auth-callback`).
 - `GET /auth/google/callback` — OAuth callback. Issues tokens and redirects back to `app_redirect` with `?access_token=...&refresh_token=...`.
+- `GET /auth/line/start` — start LINE Login (OAuth2/OIDC). Query: `role`, `app_redirect`.
+- `GET /auth/line/callback` — LINE callback. Exchanges code, issues app tokens, and redirects to `app_redirect` with tokens.
 
 ## Client usage (Expo)
 
@@ -59,10 +61,19 @@ Expo client config
 - In the app `.env`, set `EXPO_PUBLIC_API_BASE_URL` to your backend URL, e.g. `http://192.168.1.25:3000` for LAN or your tunnel/hosted URL.
 - Also set `EXPO_PUBLIC_OAUTH_REDIRECT_PATH=auth-callback` (default).
 
+Local dev (LINE)
+- Set `OAUTH_REDIRECT_BASE=http://localhost:3000` in `function/.env` (default). The callback URL becomes `http://localhost:3000/auth/line/callback`.
+- In LINE Developers Console → Channel → LINE Login → Callback URL, register:
+  - `http://localhost:3000/auth/line/callback` (works in iOS Simulator and desktop browsers)
+- If testing on Android Emulator or physical devices, `localhost` won’t reach your computer. Use one of these:
+  - Tunnel (ngrok/Cloudflare): set `OAUTH_REDIRECT_BASE=https://YOUR_SUBDOMAIN.ngrok-free.app` and configure the same URL + `/auth/line/callback` in LINE Console.
+  - Android Emulator only: you can try `http://10.0.2.2:3000/auth/line/callback` and register that exact callback in LINE Console.
+
 Server env (.env)
 - `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY`
 - `FIREBASE_WEB_API_KEY`
 - `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` (OAuth web client)
+- `LINE_CLIENT_ID`, `LINE_CLIENT_SECRET` (LINE Channel credentials)
 - `OAUTH_REDIRECT_BASE` (e.g. `http://localhost:3000` or `https://api.example.com`)
 - `APP_JWT_SECRET`, `APP_JWT_REFRESH_SECRET` (optional), `APP_JWT_TTL` (default `15m`), `APP_REFRESH_TTL` (default `30d`)
 - `ALLOWED_ORIGINS` for CORS

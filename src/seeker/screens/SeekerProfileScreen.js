@@ -148,7 +148,7 @@ const SeekerProfileScreen = () => {
       {/* Header */}
       <View style={styles.headerRow}>
         <Image
-          source={{ uri: user?.photoURL || 'https://i.pravatar.cc/120' }}
+          source={{ uri: user?.photoURL || `https://i.pravatar.cc/120?u=${user?.uid || 'anon'}` }}
           style={styles.avatar}
         />
         <View style={styles.statsRow}>

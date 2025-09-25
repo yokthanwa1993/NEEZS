@@ -51,8 +51,8 @@ const BottomTabBar = ({ state, descriptors, navigation }) => {
           };
 
           let icon = null;
-          // แท็บโปรไฟล์: แสดงรูปโปรไฟล์ถ้ามี หากไม่มีให้ใช้ placeholder
-          if (route.name === 'SeekerProfile') {
+          // แท็บโปรไฟล์: แสดงรูปโปรไฟล์ถ้ามี (ทั้ง Seeker/Employer)
+          if (route.name === 'SeekerProfile' || route.name === 'EmployerProfile') {
             const uri = user?.photoURL || `https://i.pravatar.cc/100?u=${user?.uid || 'anon'}`;
             icon = (
               <Image

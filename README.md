@@ -37,3 +37,51 @@ Client flow:
 - App signs in with Firebase Auth.
 - Fetch ID token via `auth.currentUser.getIdToken()`.
 - Call the backend with header `Authorization: Bearer <ID_TOKEN>`.
+
+## Cloudflare Tunnel (expose backend with your domain)
+
+When testing OAuth (Google/LINE) on real devices, expose the local `function/` server with a public domain via Cloudflare Tunnel.
+
+### One‑time setup
+
+1. Install cloudflared: https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/
+2. Login: `cloudflared tunnel login` (opens browser to authorize)
+3. Create a tunnel: `cloudflared tunnel create neezs-api`
+   - Note the Tunnel ID and credentials JSON path (e.g. `~/.cloudflared/<TUNNEL_ID>.json`).
+4. Map your DNS in Cloudflare: `cloudflared tunnel route dns neezs-api api.yourdomain.com`
+5. Copy `cloudflared/config.example.yml` → `cloudflared/config.yml`, then edit:
+   - `tunnel: <TUNNEL_ID>`
+   - `credentials-file: <ABSOLUTE_PATH_TO_CREDENTIALS_JSON>`
+   - `hostname: api.yourdomain.com`
+
+### Run with PM2
+
+`ecosystem.config.js` already defines:
+- `neezs-backend` (Express on :3000)
+- `neezs-tunnel` (cloudflared using `cloudflared/config.yml`)
+
+Run both:
+
+```bash
+pm2 start ecosystem.config.js
+pm2 logs
+```
+
+### Point the app and OAuth providers to your domain
+
+Root `.env` (app):
+
+```
+EXPO_PUBLIC_API_BASE_URL=https://api.yourdomain.com
+EXPO_PUBLIC_OAUTH_REDIRECT_PATH=auth-callback
+```
+
+`function/.env` (server):
+
+```
+OAUTH_REDIRECT_BASE=https://api.yourdomain.com
+```
+
+Authorized Redirect URIs:
+- Google: `https://api.yourdomain.com/auth/google/callback`
+- LINE: `https://api.yourdomain.com/auth/line/callback`

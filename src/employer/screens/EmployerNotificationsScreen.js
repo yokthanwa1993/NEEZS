@@ -37,11 +37,11 @@ const NotificationItem = ({ item }) => (
     <IconCircle name={item.icon} bg={item.color} />
     <View style={{ flex: 1, marginLeft: 12 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Text weight={700} style={{ color: '#111827', fontSize: 15 }}>{item.title}</Text>
+        <Text weight={700} style={{ color: '#111827', fontSize: 18 }}>{item.title}</Text>
         {item.isNew ? <NewPill /> : null}
       </View>
-      <Text style={{ color: '#6b7280', marginTop: 2 }}>{item.time}</Text>
-      <Text style={{ color: '#374151', marginTop: 10 }}>{item.desc}</Text>
+      <Text style={{ color: '#6b7280', marginTop: 4, fontSize: 14 }}>{item.time}</Text>
+      <Text style={{ color: '#374151', marginTop: 12, fontSize: 16 }}>{item.desc}</Text>
     </View>
   </View>
 );
@@ -82,14 +82,14 @@ const EmployerNotificationsScreen = () => {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#ffffff', paddingHorizontal: 14 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 8 },
-  headerTitle: { color: '#111827', fontSize: 18 },
+  headerTitle: { color: '#111827', fontSize: 24 },
   tabsRow: { flexDirection: 'row', paddingTop: 6, paddingBottom: 10 },
-  tabBtn: { marginRight: 20 },
-  tabLabel: { color: '#374151' },
+  tabBtn: { marginRight: 24 },
+  tabLabel: { color: '#374151', fontSize: 16 },
   tabLabelActive: { color: '#111827' },
   tabUnderline: { height: 3, backgroundColor: '#FFA500', marginTop: 6, borderRadius: 2 },
-  card: { flexDirection: 'row', backgroundColor: '#ffffff', borderRadius: 16, padding: 14, borderWidth: StyleSheet.hairlineWidth, borderColor: '#e5e7eb' },
-  iconCircle: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
+  card: { flexDirection: 'row', backgroundColor: '#ffffff', borderRadius: 16, padding: 16, borderWidth: StyleSheet.hairlineWidth, borderColor: '#e5e7eb' },
+  iconCircle: { width: 50, height: 50, borderRadius: 25, alignItems: 'center', justifyContent: 'center' },
   newPill: { backgroundColor: '#2563eb', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
 });
 

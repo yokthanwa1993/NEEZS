@@ -89,12 +89,12 @@ const ChatItem = ({ item, onDelete }) => {
         onPress={() => navigation.navigate('ChatRoom', { chat: item })}
       >
         <Avatar avatar={item.avatar} />
-        <View style={{ flex: 1, marginLeft: 12 }}>
-          <Text weight={700} style={{ color: '#111827', fontSize: 16 }} numberOfLines={1}>{item.name}</Text>
-          <Text style={{ color: '#6b7280', marginTop: 2 }} numberOfLines={1}>{item.message}</Text>
+        <View style={{ flex: 1, marginLeft: 14 }}>
+          <Text weight={700} style={{ color: '#111827', fontSize: 18 }} numberOfLines={1}>{item.name}</Text>
+          <Text style={{ color: '#6b7280', marginTop: 4, fontSize: 15 }} numberOfLines={1}>{item.message}</Text>
         </View>
         <View style={{ alignItems: 'flex-end' }}>
-          <Text style={{ color: '#9ca3af', fontSize: 12 }}>{item.time}</Text>
+          <Text style={{ color: '#9ca3af', fontSize: 13 }}>{item.time}</Text>
           {item.unread ? (
             <View style={styles.unreadPill}>
               <Text weight={700} style={{ fontSize: 12, color: '#fff' }}>{String(item.unread)}</Text>
@@ -156,18 +156,18 @@ const SeekerChatScreen = () => {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#ffffff', paddingHorizontal: 14 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 10 },
-  headerTitle: { color: '#111827', fontSize: 22 },
-  searchBar: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#f3f4f6', borderRadius: 16, paddingHorizontal: 12, paddingVertical: 10 },
+  headerTitle: { color: '#111827', fontSize: 26 },
+  searchBar: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#f3f4f6', borderRadius: 18, paddingHorizontal: 14, paddingVertical: 12 },
   itemRow: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#ffffff',
     borderRadius: 16,
-    padding: 12,
+    padding: 14,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#eef2f7',
   },
-  avatar: { width: 44, height: 44, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  avatar: { width: 52, height: 52, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
   unreadPill: { marginTop: 6, backgroundColor: '#FFA500', minWidth: 22, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 6 },
   trashBox: { marginLeft: 10, backgroundColor: '#FFF4DB', borderRadius: 16, padding: 12, borderWidth: StyleSheet.hairlineWidth, borderColor: '#FFD28A' },
   swipeAction: { width: 64, height: '80%', backgroundColor: '#FFD28A', borderRadius: 12, justifyContent: 'center', alignItems: 'center', alignSelf: 'center' },

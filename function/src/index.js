@@ -1,4 +1,13 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+// Load env from function/.env and also fall back to project root .env (EXPO_ vars)
+dotenv.config();
+try {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+  dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+} catch {}
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
@@ -11,7 +20,7 @@ import { authMiddleware } from './auth.js';
 import { sessionMiddleware, signAccessToken, signRefreshToken, verifyRefresh } from './session.js';
 import { OAuth2Client } from 'google-auth-library';
 
-const FIREBASE_WEB_API_KEY = process.env.FIREBASE_WEB_API_KEY;
+const FIREBASE_WEB_API_KEY = process.env.FIREBASE_WEB_API_KEY || process.env.EXPO_PUBLIC_FIREBASE_WEB_API_KEY;
 
 const app = express();
 app.set('trust proxy', 1);
@@ -57,23 +66,37 @@ app.post('/auth/login', async (req, res) => {
     }
 
     const uid = data.localId;
-    // ensure role document server-side
+    // ensure role-specific document server-side (no global 'users' collection)
     try {
       const admin = ensureAdmin();
-      const ref = admin.firestore().collection('users').doc(uid);
-      await ref.set({
-        roles: role ? { [role]: true } : {},
-        lastRole: role || null,
-        email: data.email || null,
-        displayName: data.displayName || null,
-        photoURL: data.photoUrl || null,
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      }, { merge: true });
+      const db = admin.firestore();
+      if (role) {
+        const roleCol = role === 'employer' ? 'employer_users' : 'seeker_users';
+        await db.collection(roleCol).doc(uid).set({
+          email: data.email || null,
+          displayName: data.displayName || null,
+          photoURL: data.photoUrl || null,
+          provider: 'password',
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        }, { merge: true });
+      }
     } catch {}
 
-    const access_token = signAccessToken({ uid, email: data.email, role: role || null });
-    const refresh_token = signRefreshToken({ uid, email: data.email, role: role || null });
+    const access_token = signAccessToken({
+      uid,
+      email: data.email,
+      role: role || null,
+      displayName: data.displayName || null,
+      photoURL: data.photoUrl || null,
+    });
+    const refresh_token = signRefreshToken({
+      uid,
+      email: data.email,
+      role: role || null,
+      displayName: data.displayName || null,
+      photoURL: data.photoUrl || null,
+    });
     return res.json({ access_token, refresh_token, user: { uid, email: data.email, displayName: data.displayName || null, photoURL: data.photoUrl || null } });
   } catch (err) {
     console.error('auth/login failed:', err);
@@ -81,10 +104,26 @@ app.post('/auth/login', async (req, res) => {
   }
 });
 
-// Refresh access token
+// Refresh access token: prefer Firebase Secure Token API when available
 app.post('/auth/refresh', async (req, res) => {
   try {
     const { refresh_token } = req.body || {};
+    if (!refresh_token) return res.status(400).json({ error: 'Missing refresh_token' });
+    if (FIREBASE_WEB_API_KEY) {
+      try {
+        const r = await fetch(`https://securetoken.googleapis.com/v1/token?key=${FIREBASE_WEB_API_KEY}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: encodeForm({ grant_type: 'refresh_token', refresh_token }),
+        });
+        const d = await r.json();
+        if (!r.ok) return res.status(401).json({ error: d.error?.message || 'Refresh failed' });
+        return res.json({ access_token: d.id_token });
+      } catch (e) {
+        return res.status(500).json({ error: 'Refresh failed' });
+      }
+    }
+    // Fallback to app-managed refresh if Firebase key not set
     const decoded = verifyRefresh(refresh_token || '');
     if (!decoded) return res.status(401).json({ error: 'Invalid refresh token' });
     const access_token = signAccessToken({ uid: decoded.uid, email: decoded.email, role: decoded.role || null });
@@ -94,9 +133,26 @@ app.post('/auth/refresh', async (req, res) => {
   }
 });
 
+// Change password (only for accounts that support password)
+app.post('/auth/change-password', authMiddleware, async (req, res) => {
+  try {
+    const { new_password } = req.body || {};
+    if (!new_password || String(new_password).length < 6) {
+      return res.status(400).json({ error: 'Invalid new password' });
+    }
+    const admin = ensureAdmin();
+    if (!admin) return res.status(500).json({ error: 'Server not configured' });
+    await admin.auth().updateUser(req.user.uid, { password: String(new_password) });
+    return res.json({ ok: true });
+  } catch (e) {
+    console.error('change-password failed:', e?.message || e);
+    return res.status(400).json({ error: 'Failed to change password' });
+  }
+});
+
 // Google OAuth 2 (server-side)
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || process.env.EXPO_PUBLIC_GOOGLE_CLIENT_SECRET;
 const OAUTH_REDIRECT_BASE = process.env.OAUTH_REDIRECT_BASE || '';
 const oauthClient = (GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET) ? new OAuth2Client(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, `${OAUTH_REDIRECT_BASE}/auth/google/callback`) : null;
 
@@ -136,41 +192,71 @@ app.get('/auth/google/callback', async (req, res) => {
     if (!idToken) return res.status(400).send('Missing Google id_token');
 
     // Sign-in with Firebase using Google id_token to get localId (uid)
-    if (!FIREBASE_WEB_API_KEY) return res.status(500).send('FIREBASE_WEB_API_KEY not set');
-    const r = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key=${FIREBASE_WEB_API_KEY}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        postBody: `id_token=${idToken}&providerId=google.com`,
-        requestUri: 'http://localhost',
-        returnIdpCredential: true,
-        returnSecureToken: true,
-      }),
-    });
-    const data = await r.json();
-    if (!r.ok) {
-      return res.status(401).send('Firebase sign-in failed: ' + (data.error?.message || ''));
+    let data = {};
+    let uid = null;
+    if (!FIREBASE_WEB_API_KEY) {
+      // Fallback: decode id_token and use google:<sub>
+      const payload = JSON.parse(Buffer.from(String(idToken).split('.')[1] || '', 'base64').toString('utf8')) || {};
+      uid = `google:${payload.sub}`;
+      data.email = payload.email || null;
+      data.displayName = payload.name || null;
+      data.photoUrl = payload.picture || null;
+    } else {
+      const r = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key=${FIREBASE_WEB_API_KEY}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          postBody: `id_token=${idToken}&providerId=google.com`,
+          requestUri: 'http://localhost',
+          returnIdpCredential: true,
+          returnSecureToken: true,
+        }),
+      });
+      data = await r.json();
+      if (!r.ok) {
+        return res.status(401).send('Firebase sign-in failed: ' + (data.error?.message || ''));
+      }
+      uid = data.localId;
     }
-    const uid = data.localId;
 
-    // Ensure role in Firestore
+    // Ensure role-specific profile (no global 'users')
     try {
       const admin = ensureAdmin();
-      const ref = admin.firestore().collection('users').doc(uid);
-      await ref.set({
-        roles: role ? { [role]: true } : {},
-        lastRole: role || null,
+      const db = admin.firestore();
+      const roleCol = role === 'employer' ? 'employer_users' : 'seeker_users';
+      await db.collection(roleCol).doc(uid).set({
         email: data.email || null,
         displayName: data.displayName || null,
         photoURL: data.photoUrl || null,
+        provider: 'google',
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
       }, { merge: true });
     } catch {}
 
-    // Issue app tokens
-    const access_token = signAccessToken({ uid, email: data.email, role: role || null });
-    const refresh_token = signRefreshToken({ uid, email: data.email, role: role || null });
+    // Prefer returning Firebase tokens when available
+    let access_token;
+    let refresh_token;
+    if (data.idToken && data.refreshToken) {
+      access_token = data.idToken;
+      refresh_token = data.refreshToken;
+    } else {
+      // Fallback to app-managed JWTs when Firebase Web API key is not set
+      access_token = signAccessToken({
+        uid,
+        email: data.email,
+        role: role || null,
+        displayName: data.displayName || null,
+        photoURL: data.photoUrl || null,
+      });
+      refresh_token = signRefreshToken({
+        uid,
+        email: data.email,
+        role: role || null,
+        displayName: data.displayName || null,
+        photoURL: data.photoUrl || null,
+      });
+    }
 
     if (app_redirect) {
       const url = `${app_redirect}${app_redirect.includes('?') ? '&' : '?'}access_token=${encodeURIComponent(access_token)}&refresh_token=${encodeURIComponent(refresh_token)}`;
@@ -186,12 +272,25 @@ app.get('/auth/google/callback', async (req, res) => {
 // LINE Login (OAuth 2.0 + OIDC)
 const LINE_CLIENT_ID = process.env.LINE_CLIENT_ID || process.env.LINE_CHANNEL_ID;
 const LINE_CLIENT_SECRET = process.env.LINE_CLIENT_SECRET || process.env.LINE_CHANNEL_SECRET;
-const LINE_REDIRECT = `${OAUTH_REDIRECT_BASE || ''}/auth/line/callback`;
+const LINE_REDIRECT_DEFAULT = `${OAUTH_REDIRECT_BASE || ''}/auth/line/callback`;
 
 function encodeForm(data) {
   return Object.entries(data)
     .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
     .join('&');
+}
+
+function buildLineAuthorizeUrl({ role, app_redirect, redirectUri }) {
+  const nonce = Math.random().toString(36).slice(2);
+  const state = toBase64Url({ role, app_redirect, nonce });
+  const url = new URL('https://access.line.me/oauth2/v2.1/authorize');
+  url.searchParams.set('response_type', 'code');
+  url.searchParams.set('client_id', LINE_CLIENT_ID);
+  url.searchParams.set('redirect_uri', redirectUri);
+  url.searchParams.set('scope', 'openid profile email');
+  url.searchParams.set('state', state);
+  url.searchParams.set('nonce', nonce);
+  return url.toString();
 }
 
 app.get('/auth/line/start', (req, res) => {
@@ -200,26 +299,21 @@ app.get('/auth/line/start', (req, res) => {
       return res.status(500).send('LINE OAuth not configured');
     }
     const { role = 'seeker', app_redirect } = req.query;
-    const nonce = Math.random().toString(36).slice(2);
-    const state = toBase64Url({ role, app_redirect, nonce });
-    const url = new URL('https://access.line.me/oauth2/v2.1/authorize');
-    url.searchParams.set('response_type', 'code');
-    url.searchParams.set('client_id', LINE_CLIENT_ID);
-    url.searchParams.set('redirect_uri', LINE_REDIRECT);
-    url.searchParams.set('scope', 'openid profile email');
-    url.searchParams.set('state', state);
-    url.searchParams.set('nonce', nonce);
-    return res.redirect(url.toString());
+    const authUrl = buildLineAuthorizeUrl({ role, app_redirect, redirectUri: LINE_REDIRECT_DEFAULT });
+    return res.redirect(authUrl);
   } catch (e) {
     return res.status(500).send('Failed to start LINE OAuth');
   }
 });
 
-app.get('/auth/line/callback', async (req, res) => {
+async function handleLineCallback({ req, res, fixedRole, redirectUri }) {
   try {
     const code = String(req.query.code || '');
     const s = req.query.state;
-    const { role = 'seeker', app_redirect, nonce } = fromBase64Url(String(s || ''));
+    const stateObj = fromBase64Url(String(s || ''));
+    const role = fixedRole || stateObj.role || 'seeker';
+    const app_redirect = stateObj.app_redirect;
+    const nonce = stateObj.nonce;
     if (!code) return res.status(400).send('Missing code');
     if (!LINE_CLIENT_ID || !LINE_CLIENT_SECRET || !OAUTH_REDIRECT_BASE) {
       return res.status(500).send('LINE OAuth not configured');
@@ -234,7 +328,7 @@ app.get('/auth/line/callback', async (req, res) => {
         code,
         client_id: LINE_CLIENT_ID,
         client_secret: LINE_CLIENT_SECRET,
-        redirect_uri: LINE_REDIRECT,
+        redirect_uri: redirectUri,
       }),
     });
     const tokenJson = await tokenRes.json();
@@ -257,24 +351,67 @@ app.get('/auth/line/callback', async (req, res) => {
       profile = await pr.json();
     } catch {}
 
-    const uid = `line:${sub}`;
-    // Ensure role in Firestore
+    let uid = `line:${sub}`;
+    // If Firebase Web API key is present, sign in to Firebase via generic OIDC provider (oidc.line)
+    let firebaseTokens = null;
+    if (FIREBASE_WEB_API_KEY) {
+      try {
+        const r = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key=${FIREBASE_WEB_API_KEY}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            postBody: `id_token=${id_token}&providerId=oidc.line`,
+            requestUri: 'http://localhost',
+            returnIdpCredential: true,
+            returnSecureToken: true,
+          }),
+        });
+        const d = await r.json();
+        if (r.ok) {
+          uid = d.localId || uid;
+          firebaseTokens = { idToken: d.idToken, refreshToken: d.refreshToken };
+        }
+      } catch {}
+    }
+
+    // Ensure role-specific profile only
     try {
       const admin = ensureAdmin();
-      const ref = admin.firestore().collection('users').doc(uid);
-      await ref.set({
-        roles: role ? { [role]: true } : {},
-        lastRole: role || null,
-        email: email,
+      const db = admin.firestore();
+      const roleCol = role === 'employer' ? 'employer_users' : 'seeker_users';
+      await db.collection(roleCol).doc(uid).set({
+        email,
         displayName: profile?.displayName || null,
         photoURL: profile?.pictureUrl || null,
+        provider: 'line',
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
       }, { merge: true });
     } catch {}
 
-    const access_token_app = signAccessToken({ uid, email, role: role || null });
-    const refresh_token_app = signRefreshToken({ uid, email, role: role || null });
+    // Prepare tokens for client
+    let access_token_app;
+    let refresh_token_app;
+    if (firebaseTokens?.idToken && firebaseTokens?.refreshToken) {
+      access_token_app = firebaseTokens.idToken;
+      refresh_token_app = firebaseTokens.refreshToken;
+    } else {
+      access_token_app = signAccessToken({
+        uid,
+        email,
+        role: role || null,
+        displayName: profile?.displayName || null,
+        photoURL: profile?.pictureUrl || null,
+      });
+      refresh_token_app = signRefreshToken({
+        uid,
+        email,
+        role: role || null,
+        displayName: profile?.displayName || null,
+        photoURL: profile?.pictureUrl || null,
+      });
+    }
+
     if (app_redirect) {
       const url = `${app_redirect}${app_redirect.includes('?') ? '&' : '?'}access_token=${encodeURIComponent(access_token_app)}&refresh_token=${encodeURIComponent(refresh_token_app)}`;
       return res.redirect(url);
@@ -284,14 +421,52 @@ app.get('/auth/line/callback', async (req, res) => {
     console.error('line callback error', e);
     return res.status(500).send('LINE callback failed');
   }
+}
+
+app.get('/auth/line/callback', (req, res) => handleLineCallback({ req, res, fixedRole: null, redirectUri: LINE_REDIRECT_DEFAULT }));
+
+// Role-specific paths for clarity in provider console
+app.get('/SeekerAuth/line/start', (req, res) => {
+  try {
+    if (!LINE_CLIENT_ID || !LINE_CLIENT_SECRET || !OAUTH_REDIRECT_BASE) {
+      return res.status(500).send('LINE OAuth not configured');
+    }
+    const app_redirect = req.query.app_redirect;
+    const redirectUri = `${OAUTH_REDIRECT_BASE}/SeekerAuth/line/callback`;
+    const authUrl = buildLineAuthorizeUrl({ role: 'seeker', app_redirect, redirectUri });
+    return res.redirect(authUrl);
+  } catch (e) { return res.status(500).send('Failed to start LINE OAuth'); }
 });
+
+app.get('/EmployerAuth/line/start', (req, res) => {
+  try {
+    if (!LINE_CLIENT_ID || !LINE_CLIENT_SECRET || !OAUTH_REDIRECT_BASE) {
+      return res.status(500).send('LINE OAuth not configured');
+    }
+    const app_redirect = req.query.app_redirect;
+    const redirectUri = `${OAUTH_REDIRECT_BASE}/EmployerAuth/line/callback`;
+    const authUrl = buildLineAuthorizeUrl({ role: 'employer', app_redirect, redirectUri });
+    return res.redirect(authUrl);
+  } catch (e) { return res.status(500).send('Failed to start LINE OAuth'); }
+});
+
+app.get('/SeekerAuth/line/callback', (req, res) => handleLineCallback({ req, res, fixedRole: 'seeker', redirectUri: `${OAUTH_REDIRECT_BASE}/SeekerAuth/line/callback` }));
+app.get('/EmployerAuth/line/callback', (req, res) => handleLineCallback({ req, res, fixedRole: 'employer', redirectUri: `${OAUTH_REDIRECT_BASE}/EmployerAuth/line/callback` }));
 // Example protected route: list users collection
-app.get('/api/users', sessionMiddleware, async (req, res) => {
+app.get('/api/users', authMiddleware, async (req, res) => {
   try {
     const admin = ensureAdmin();
     if (!admin) return res.status(500).json({ error: 'Server not configured' });
-    const snap = await admin.firestore().collection('users').limit(20).get();
-    const users = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    // For debugging: list recent seeker and employer users combined (limited)
+    const db = admin.firestore();
+    const [sSnap, eSnap] = await Promise.all([
+      db.collection('seeker_users').limit(10).get(),
+      db.collection('employer_users').limit(10).get(),
+    ]);
+    const users = [
+      ...sSnap.docs.map((d) => ({ id: d.id, role: 'seeker', ...d.data() })),
+      ...eSnap.docs.map((d) => ({ id: d.id, role: 'employer', ...d.data() })),
+    ];
     res.json({ users });
   } catch (err) {
     console.error('List users failed:', err);
@@ -300,13 +475,15 @@ app.get('/api/users', sessionMiddleware, async (req, res) => {
 });
 
 // Example protected route: upsert current user profile
-app.post('/api/users', sessionMiddleware, async (req, res) => {
+app.post('/api/users', authMiddleware, async (req, res) => {
   try {
     const uid = req.user.uid;
+    const role = (req.query.role || req.header('x-portal') || 'seeker').toString();
     const data = req.body || {};
     const admin = ensureAdmin();
     if (!admin) return res.status(500).json({ error: 'Server not configured' });
-    await admin.firestore().collection('users').doc(uid).set(data, { merge: true });
+    const roleCol = role === 'employer' ? 'employer_users' : 'seeker_users';
+    await admin.firestore().collection(roleCol).doc(uid).set(data, { merge: true });
     res.status(201).json({ id: uid });
   } catch (err) {
     console.error('Upsert user failed:', err);
@@ -315,21 +492,19 @@ app.post('/api/users', sessionMiddleware, async (req, res) => {
 });
 
 // Ensure role for current user and record lastRole
-app.post('/api/roles/ensure', sessionMiddleware, async (req, res) => {
+app.post('/api/roles/ensure', authMiddleware, async (req, res) => {
   try {
     const { role } = req.body || {};
     if (!role || !['seeker', 'employer'].includes(role)) {
       return res.status(400).json({ error: 'Invalid role' });
     }
-    const uid = req.session.uid;
+    const uid = req.user.uid;
     const admin = ensureAdmin();
     if (!admin) return res.status(500).json({ error: 'Server not configured' });
-    const ref = admin.firestore().collection('users').doc(uid);
+    const roleCol = role === 'employer' ? 'employer_users' : 'seeker_users';
+    const ref = admin.firestore().collection(roleCol).doc(uid);
     await ref.set({
-      roles: { [role]: true },
-      lastRole: role,
-      // For session-based auth we have limited claims; client can upsert later
-      email: req.session.email || null,
+      email: req.user.email || null,
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
     }, { merge: true });
@@ -342,14 +517,26 @@ app.post('/api/roles/ensure', sessionMiddleware, async (req, res) => {
 });
 
 // Get current user document from users collection
-app.get('/api/users/me', sessionMiddleware, async (req, res) => {
+app.get('/api/users/me', authMiddleware, async (req, res) => {
   try {
-    const uid = req.session.uid;
+    const uid = req.user.uid;
+    const role = (req.query.role || req.header('x-portal') || 'seeker').toString();
     const admin = ensureAdmin();
-    if (!admin) return res.status(500).json({ error: 'Server not configured' });
-    const ref = admin.firestore().collection('users').doc(uid);
+    if (!admin) {
+      const fallback = {
+        email: req.user.email || null,
+        displayName: req.user.name || null,
+        photoURL: req.user.picture || null,
+      };
+      return res.json({ id: uid, data: fallback });
+    }
+    const roleCol = role === 'employer' ? 'employer_users' : 'seeker_users';
+    const ref = admin.firestore().collection(roleCol).doc(uid);
     const snap = await ref.get();
-    return res.json({ id: uid, data: snap.exists ? snap.data() : null });
+    if (snap.exists) return res.json({ id: uid, data: snap.data() });
+    // If doc doesn't exist yet, still return token profile so UI can render something
+    const fallback = { email: req.user.email || null, displayName: req.user.name || null, photoURL: req.user.picture || null };
+    return res.json({ id: uid, data: fallback });
   } catch (err) {
     console.error('Get me failed:', err);
     res.status(500).json({ error: 'Failed to get user' });

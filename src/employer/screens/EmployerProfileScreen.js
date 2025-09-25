@@ -39,7 +39,7 @@ const EmployerProfileScreen = ({ navigation }) => {
       {/* Header */}
       <View style={styles.header}> 
         <Text weight={700} style={styles.headerTitle}>โปรไฟล์ธุรกิจ</Text>
-        <TouchableOpacity style={styles.iconBtn} onPress={() => Alert.alert('แก้ไขโปรไฟล์', 'coming soon')}>
+        <TouchableOpacity style={styles.iconBtn} onPress={() => navigation.navigate('EmployerCompanyInfo') }>
           <Ionicons name="pencil" size={18} color="#111827" />
         </TouchableOpacity>
       </View>
@@ -55,14 +55,14 @@ const EmployerProfileScreen = ({ navigation }) => {
 
       {/* Actions */}
       <View style={styles.section}> 
-        <Row icon="business-outline" label="ข้อมูลบริษัท" value="ดู/แก้ไข" onPress={() => Alert.alert('ข้อมูลบริษัท', 'coming soon')} />
-        <Row icon="document-text-outline" label="นโยบาย/ใบกำกับ" value="ตั้งค่า" onPress={() => Alert.alert('ตั้งค่าเอกสาร', 'coming soon')} />
-        <Row icon="card-outline" label="การชำระเงิน" value="ตั้งค่า" onPress={() => Alert.alert('การชำระเงิน', 'coming soon')} />
+        <Row icon="business-outline" label="ข้อมูลบริษัท" value="ดู/แก้ไข" onPress={() => navigation.navigate('EmployerCompanyInfo')} />
+        <Row icon="document-text-outline" label="นโยบาย/ใบกำกับ" value="ตั้งค่า" onPress={() => navigation.navigate('EmployerPolicyInvoice')} />
+        <Row icon="card-outline" label="การชำระเงิน" value="ตั้งค่า" onPress={() => navigation.navigate('EmployerPaymentSettings')} />
       </View>
 
       <View style={styles.section}> 
-        <Row icon="lock-closed-outline" label="เปลี่ยนรหัสผ่าน" value="" onPress={() => Alert.alert('เปลี่ยนรหัสผ่าน', 'coming soon')} />
-        <Row icon="notifications-outline" label="การแจ้งเตือน" value="จัดการ" onPress={() => Alert.alert('การแจ้งเตือน', 'coming soon')} />
+        <Row icon="lock-closed-outline" label="เปลี่ยนรหัสผ่าน" value="" onPress={() => navigation.navigate('EmployerChangePassword')} />
+        <Row icon="notifications-outline" label="การแจ้งเตือน" value="จัดการ" onPress={() => navigation.navigate('EmployerNotificationSettings')} />
       </View>
 
       {/* Danger zone */}
@@ -77,17 +77,17 @@ const EmployerProfileScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f8fafc' },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 8, paddingBottom: 12 },
-  headerTitle: { fontSize: 18, color: '#111827' },
+  headerTitle: { fontSize: 22, color: '#111827' },
   iconBtn: { width: 36, height: 36, borderRadius: 8, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', borderWidth: StyleSheet.hairlineWidth, borderColor: '#e5e7eb' },
   card: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', marginHorizontal: 20, padding: 14, borderRadius: 16, borderWidth: StyleSheet.hairlineWidth, borderColor: '#e5e7eb' },
   avatar: { width: 56, height: 56, borderRadius: 28, backgroundColor: '#e5e7eb' },
-  name: { fontSize: 16, color: '#111827' },
-  sub: { color: '#6b7280', marginTop: 2 },
+  name: { fontSize: 20, color: '#111827' },
+  sub: { color: '#6b7280', marginTop: 2, fontSize: 15 },
   section: { backgroundColor: '#fff', marginTop: 14, marginHorizontal: 20, borderRadius: 16, overflow: 'hidden', borderWidth: StyleSheet.hairlineWidth, borderColor: '#e5e7eb' },
-  row: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 14, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#e5e7eb' },
+  row: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 16, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: '#e5e7eb' },
   rowIconBox: { width: 28, height: 28, borderRadius: 8, backgroundColor: '#f3f4f6', alignItems: 'center', justifyContent: 'center', marginRight: 12 },
-  rowLabel: { color: '#111827', flex: 1 },
-  rowValue: { color: '#6b7280', marginRight: 8 },
+  rowLabel: { color: '#111827', flex: 1, fontSize: 17 },
+  rowValue: { color: '#6b7280', marginRight: 8, fontSize: 15 },
   logoutBtn: { marginTop: 20, marginHorizontal: 20, backgroundColor: '#ef4444', paddingVertical: 14, borderRadius: 12, alignItems: 'center', justifyContent: 'center', flexDirection: 'row' },
 });
 

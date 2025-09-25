@@ -41,6 +41,11 @@ import MyJobsScreen from './src/employer/screens/MyJobsScreen';
 import EmployerChatScreen from './src/employer/screens/EmployerChatScreen';
 import EmployerNotificationsScreen from './src/employer/screens/EmployerNotificationsScreen';
 import EmployerProfileScreen from './src/employer/screens/EmployerProfileScreen';
+import EmployerCompanyInfoScreen from './src/employer/screens/EmployerCompanyInfoScreen';
+import EmployerPolicyInvoiceScreen from './src/employer/screens/EmployerPolicyInvoiceScreen';
+import EmployerPaymentSettingsScreen from './src/employer/screens/EmployerPaymentSettingsScreen';
+import EmployerChangePasswordScreen from './src/employer/screens/EmployerChangePasswordScreen';
+import EmployerNotificationSettingsScreen from './src/employer/screens/EmployerNotificationSettingsScreen';
 import EmployerQuickPostScreen from './src/employer/screens/EmployerQuickPostScreen';
 import EmployerPostDetailsScreen from './src/employer/screens/EmployerPostDetailsScreen';
 import EmployerJobLocationScreen from './src/employer/screens/EmployerJobLocationScreen';
@@ -254,6 +259,11 @@ const AppNavigator = () => {
         ) : portal === 'employer' ? (
           <>
             <Stack.Screen name="EmployerTabs" component={EmployerTabs} />
+            <Stack.Screen name="EmployerCompanyInfo" component={EmployerCompanyInfoScreen} />
+            <Stack.Screen name="EmployerPolicyInvoice" component={EmployerPolicyInvoiceScreen} />
+            <Stack.Screen name="EmployerPaymentSettings" component={EmployerPaymentSettingsScreen} />
+            <Stack.Screen name="EmployerChangePassword" component={EmployerChangePasswordScreen} />
+            <Stack.Screen name="EmployerNotificationSettings" component={EmployerNotificationSettingsScreen} />
             <Stack.Screen name="EmployerPostDetails" component={EmployerPostDetailsScreen} />
             <Stack.Screen name="EmployerJobLocation" component={EmployerJobLocationScreen} />
             <Stack.Screen name="EmployerMapPicker" component={EmployerMapPickerScreen} />

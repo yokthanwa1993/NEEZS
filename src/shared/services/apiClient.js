@@ -1,12 +1,20 @@
 import * as tokenStore from './tokenStore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const DEFAULT_BASE = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:3000';
 
 async function getSessionToken() { return tokenStore.getAccessToken(); }
+async function getPortal() {
+  try { return (await AsyncStorage.getItem('NEEZS_PORTAL')) || 'seeker'; } catch { return 'seeker'; }
+}
 
 export async function apiFetch(path, { method = 'GET', body, auth: needAuth = true, headers = {} } = {}) {
   const url = `${DEFAULT_BASE}${path.startsWith('/') ? path : `/${path}`}`;
   const finalHeaders = { 'Content-Type': 'application/json', ...headers };
+  try {
+    const portal = await getPortal();
+    if (portal) finalHeaders['X-Portal'] = portal;
+  } catch {}
   if (needAuth) {
     const token = await getSessionToken();
     if (token) finalHeaders.Authorization = `Bearer ${token}`;

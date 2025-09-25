@@ -55,21 +55,48 @@ const SeekerScreen = ({ navigation }) => {
         contentContainerStyle={styles.contentContainer}
         ListHeaderComponent={() => (
           <View>
-            {/* Header solid brand background */}
+            {/* Header solid brand background (แบบ e-wallet) */}
             <View style={styles.headerWrap}>
               <View style={[styles.headerGradient, { backgroundColor: '#FFA500' }]}>
-                {/* address row */}
-                <View style={styles.addrRow}>
-                  <Ionicons name="chevron-back" size={18} color="#111827" style={{ marginRight: 6 }} />
-                  <Ionicons name="location" size={16} color="#111827" />
-                  <Text weight={700} style={{ color: '#111827', marginLeft: 6 }} numberOfLines={1}>8 115, 58 ถ. แบริ่ง 107 สายไหม กรุงเทพฯ</Text>
-                  <View style={{ flex: 1 }} />
-                  <TouchableOpacity style={styles.heartBtn}><Ionicons name="heart" size={16} color="#111827" /></TouchableOpacity>
+                {/* top brand + search row */}
+                <View style={styles.brandRow}>
+                  <View style={styles.logoBox} />
+                  <View style={styles.searchField}>
+                    <Ionicons name="search" size={18} color="#9ca3af" />
+                    <TextInput
+                      style={{ flex: 1, marginLeft: 8, color: '#111827' }}
+                      placeholder="ค้นหางาน ตำแหน่ง หรือสถานที่"
+                      placeholderTextColor="#9ca3af"
+                      returnKeyType="search"
+                    />
+                  </View>
+                  <TouchableOpacity style={styles.iconBtnClear} onPress={() => Alert.alert('แชท', 'เปิดกล่องข้อความ')}>
+                    <Ionicons name="chatbubbles-outline" size={18} color="#111827" />
+                    <View style={styles.badge}><Text weight={700} style={{ color: '#fff', fontSize: 10 }}>4</Text></View>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.iconBtnClear} onPress={() => Alert.alert('แจ้งเตือน', 'เปิดการแจ้งเตือน')}>
+                    <Ionicons name="notifications-outline" size={18} color="#111827" />
+                    <View style={styles.badge}><Text weight={700} style={{ color: '#fff', fontSize: 10 }}>9</Text></View>
+                  </TouchableOpacity>
                 </View>
-                {/* search */}
-                <View style={styles.searchInHeader}>
-                  <Ionicons name="search" size={18} color="#9ca3af" />
-                  <TextInput style={{ flex: 1, marginLeft: 8, color: '#111827' }} placeholder="อย่านอนถ้ายังหิว หาเงินก่อน" placeholderTextColor="#9ca3af" />
+                {/* quick actions bar */}
+                <View style={styles.quickBar}>
+                  <View style={styles.quickItem}>
+                    <Ionicons name="swap-horizontal" size={20} color="#fff" />
+                    <Text weight={800} style={styles.quickText}>โอนเงิน</Text>
+                  </View>
+                  <View style={styles.quickItem}>
+                    <Ionicons name="download-outline" size={20} color="#fff" />
+                    <Text weight={800} style={styles.quickText}>รับเงิน</Text>
+                  </View>
+                  <View style={styles.quickItem}>
+                    <Ionicons name="scan" size={20} color="#fff" />
+                    <Text weight={800} style={styles.quickText}>สแกน</Text>
+                  </View>
+                  <View style={styles.quickItem}>
+                    <Ionicons name="card-outline" size={20} color="#fff" />
+                    <Text weight={800} style={styles.quickText}>จ่ายเงิน</Text>
+                  </View>
                 </View>
               </View>
             </View>
@@ -135,10 +162,15 @@ const styles = StyleSheet.create({
   },
   // ทำให้ส่วนหัวเต็มจอแบบไร้ขอบซ้าย/ขวา ด้วยการลบ padding ของ container ออกชั่วคราว
   headerWrap: { marginHorizontal: -20, borderBottomLeftRadius: 24, borderBottomRightRadius: 24, overflow: 'hidden', marginBottom: 12 },
-  headerGradient: { height: 180, paddingVertical: 16, paddingHorizontal: 20 },
-  addrRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
-  heartBtn: { width: 30, height: 30, borderRadius: 15, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', borderWidth: StyleSheet.hairlineWidth, borderColor: '#e5e7eb' },
-  searchInHeader: { flexDirection: 'row', alignItems:'center', backgroundColor: '#fff', borderRadius: 18, paddingHorizontal: 12, paddingVertical: 12, borderWidth: StyleSheet.hairlineWidth, borderColor: '#e5e7eb', shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 10, shadowOffset: { width: 0, height: 4 } },
+  headerGradient: { paddingVertical: 12, paddingHorizontal: 16 },
+  brandRow: { flexDirection: 'row', alignItems: 'center' },
+  logoBox: { width: 28, height: 28, borderRadius: 6, backgroundColor: '#fff' },
+  searchField: { flex: 1, flexDirection: 'row', alignItems:'center', backgroundColor: '#fff', borderRadius: 16, paddingHorizontal: 12, paddingVertical: 10, marginHorizontal: 10, borderWidth: StyleSheet.hairlineWidth, borderColor: '#e5e7eb' },
+  iconBtnClear: { width: 32, height: 32, borderRadius: 8, alignItems: 'center', justifyContent: 'center', marginLeft: 8, position: 'relative' },
+  badge: { position: 'absolute', top: -4, right: -4, backgroundColor: '#ef4444', minWidth: 16, height: 16, borderRadius: 8, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 2 },
+  quickBar: { marginTop: 12, backgroundColor: '#FFA500', borderRadius: 0, paddingVertical: 14, flexDirection: 'row', justifyContent: 'space-around' },
+  quickItem: { alignItems: 'center' },
+  quickText: { color: '#fff', marginTop: 6 },
   bannerCard: { width: '100%', height: 160, borderRadius: 16, overflow: 'hidden', marginBottom: 14, backgroundColor: '#fff', shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 10, shadowOffset: { width: 0, height: 4 } },
   bannerImage: { width: '100%', height: '100%' },
   dotsRow: { flexDirection: 'row', justifyContent: 'center', marginTop: 4, marginBottom: 6 },
