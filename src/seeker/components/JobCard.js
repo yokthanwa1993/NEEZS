@@ -1,16 +1,27 @@
 import React from 'react';
-import { View, StyleSheet, Pressable } from 'react-native';
+import { View, StyleSheet, Pressable, Image } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Text } from '../../shared/components/Typography';
 
 const JobCard = ({ job, onPress }) => {
   return (
     <Pressable onPress={() => onPress?.(job)} style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}>
+      {job.image ? (
+        <Image source={{ uri: job.image }} style={styles.cover} />
+      ) : null}
       <View style={styles.headerRow}>
         <Text weight={600} style={styles.title}>{job.title}</Text>
         <Text weight={500} style={styles.schedule}>{job.schedule}</Text>
       </View>
       <Text weight={500} style={styles.company}>{job.company}</Text>
       <Text style={styles.location}>{job.location}</Text>
+      <View style={styles.metaRow}>
+        <Ionicons name="time-outline" size={14} color="#6b7280" />
+        <Text style={styles.metaText}> {job.workHours || '09:00-18:00'}</Text>
+        <View style={{ width: 12 }} />
+        <Ionicons name="calendar-outline" size={14} color="#6b7280" />
+        <Text style={styles.metaText}> {job.endAt || '31/12 23:59'}</Text>
+      </View>
       <Text weight={600} style={styles.salary}>{job.salary}</Text>
       <View style={styles.badgeRow}>
         {job.badges?.map((badge) => (
@@ -40,6 +51,13 @@ const styles = StyleSheet.create({
     opacity: 0.85,
     transform: [{ scale: 0.99 }],
   },
+  cover: {
+    width: '100%',
+    height: 160,
+    borderRadius: 12,
+    marginBottom: 12,
+    backgroundColor: '#e5e7eb',
+  },
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -67,6 +85,12 @@ const styles = StyleSheet.create({
     marginTop: 4,
     color: '#6b7280',
   },
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 6,
+  },
+  metaText: { color: '#6b7280' },
   salary: {
     marginTop: 6,
     color: '#047857',

@@ -50,6 +50,8 @@ import EmployerQuickPostScreen from './src/employer/screens/EmployerQuickPostScr
 import EmployerPostDetailsScreen from './src/employer/screens/EmployerPostDetailsScreen';
 import EmployerJobLocationScreen from './src/employer/screens/EmployerJobLocationScreen';
 import EmployerMapPickerScreen from './src/employer/screens/EmployerMapPickerScreen';
+import EmployerApplicantsScreen from './src/employer/screens/EmployerApplicantsScreen';
+import EmployerApplicantDetailScreen from './src/employer/screens/EmployerApplicantDetailScreen';
 import * as authApi from './src/shared/services/authApi';
 import { useSeekerAuth } from './src/seeker/contexts/SeekerAuthContext';
 import { useEmployerAuth } from './src/employer/contexts/EmployerAuthContext';
@@ -267,6 +269,8 @@ const AppNavigator = () => {
             <Stack.Screen name="EmployerPostDetails" component={EmployerPostDetailsScreen} />
             <Stack.Screen name="EmployerJobLocation" component={EmployerJobLocationScreen} />
             <Stack.Screen name="EmployerMapPicker" component={EmployerMapPickerScreen} />
+            <Stack.Screen name="EmployerApplicants" component={EmployerApplicantsScreen} />
+            <Stack.Screen name="EmployerApplicantDetail" component={EmployerApplicantDetailScreen} />
             <Stack.Screen name="ChatRoom" component={ChatRoomScreen} />
           </>
         ) : (
