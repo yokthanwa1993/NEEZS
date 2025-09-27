@@ -1,7 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { View, StyleSheet, FlatList, TouchableOpacity, Alert, TextInput, Image, Dimensions } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
+import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 import { Text, H1, H2, MediumText } from '../../shared/components/Typography';
 import FilterPill from '../components/FilterPill';
@@ -14,6 +15,7 @@ import { useSeekerAuth } from '../contexts/SeekerAuthContext';
 const SeekerScreen = ({ navigation }) => {
   const { user } = useSeekerAuth();
   const { width } = Dimensions.get('window');
+  const insets = useSafeAreaInsets();
   const banners = [
     'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?q=80&w=1200&auto=format&fit=crop',
     'https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1200&auto=format&fit=crop',
@@ -48,7 +50,8 @@ const SeekerScreen = ({ navigation }) => {
   }, [selectedCategory]);
 
   return (
-    <SafeAreaView edges={['top']} style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar hidden={false} translucent backgroundColor="transparent" style="light" />
       <FlatList
         data={filteredJobs}
         keyExtractor={(job) => job.id}
@@ -61,7 +64,7 @@ const SeekerScreen = ({ navigation }) => {
                 colors={["#ff6a00", "#ff8c39"]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
-                style={styles.headerGradient}
+                style={[styles.headerGradient, { paddingTop: insets.top + 12 }]}
               >
                 {/* Welcome row */}
                 <View style={styles.welcomeRow}>
@@ -148,7 +151,7 @@ const SeekerScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#f8fafc',
+    backgroundColor: 'transparent',
   },
   contentContainer: {
     padding: 20,
