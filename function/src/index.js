@@ -16,6 +16,7 @@ import rateLimit from 'express-rate-limit';
 import https from 'https';
 import fs from 'fs';
 import { ensureAdmin } from './firebaseAdmin.js';
+import crypto from 'crypto';
 import { authMiddleware } from './auth.js';
 import { sessionMiddleware, signAccessToken, signRefreshToken, verifyRefresh } from './session.js';
 import { OAuth2Client } from 'google-auth-library';
@@ -356,11 +357,14 @@ async function handleLineCallback({ req, res, fixedRole, redirectUri }) {
     let firebaseTokens = null;
     if (FIREBASE_WEB_API_KEY) {
       try {
+        // Firebase Identity Toolkit expects SHA-256 of the raw nonce
+        const hashed = nonce ? crypto.createHash('sha256').update(String(nonce)).digest('hex') : null;
+        const postBody = `id_token=${id_token}&providerId=oidc.line${hashed ? `&nonce=${encodeURIComponent(hashed)}` : ''}`;
         const r = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key=${FIREBASE_WEB_API_KEY}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            postBody: `id_token=${id_token}&providerId=oidc.line`,
+            postBody,
             requestUri: 'http://localhost',
             returnIdpCredential: true,
             returnSecureToken: true,
@@ -370,6 +374,8 @@ async function handleLineCallback({ req, res, fixedRole, redirectUri }) {
         if (r.ok) {
           uid = d.localId || uid;
           firebaseTokens = { idToken: d.idToken, refreshToken: d.refreshToken };
+        } else {
+          console.error('Firebase OIDC signInWithIdp (LINE) failed:', d);
         }
       } catch {}
     }

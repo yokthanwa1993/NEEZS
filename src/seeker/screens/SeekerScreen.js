@@ -50,100 +50,108 @@ const SeekerScreen = ({ navigation }) => {
   }, [selectedCategory]);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView edges={['left','right','bottom']} style={styles.safeArea}>
+      {/* Status bar overlays on top of the orange header */}
       <StatusBar hidden={false} translucent backgroundColor="transparent" style="light" />
       <FlatList
+        contentInsetAdjustmentBehavior="never"
+        style={styles.container}
         data={filteredJobs}
-        keyExtractor={(job) => job.id}
-        contentContainerStyle={styles.contentContainer}
-        ListHeaderComponent={() => (
-          <View>
-            {/* Header gradient style ตามตัวอย่าง */}
-            <View style={styles.headerWrap}>
-              <LinearGradient
-                colors={["#ff6a00", "#ff8c39"]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={[styles.headerGradient, { paddingTop: insets.top + 12 }]}
-              >
-                {/* Welcome row */}
-                <View style={styles.welcomeRow}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-                    <Image
-                      source={{ uri: user?.photoURL || 'https://i.pravatar.cc/100?img=12' }}
-                      style={styles.avatar}
-                    />
-                    <View style={{ marginLeft: 10 }}>
-                      <Text style={styles.welcomeSmall}>Welcome Back!</Text>
-                      <Text weight={800} style={styles.welcomeName}>{user?.displayName || 'Jassica maria'} 👋</Text>
+          keyExtractor={(job) => job.id}
+          contentContainerStyle={styles.contentContainer}
+          ListHeaderComponent={() => (
+            <View>
+              {/* Header gradient style ตามตัวอย่าง */}
+              <View style={styles.headerWrap}>
+                <LinearGradient
+                  colors={["#ff6a00", "#ff8c39"]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  // push content below the notch while letting the orange color
+                  // extend to the very top behind the status bar
+                  style={[
+                    styles.headerGradient,
+                    { paddingTop: insets.top + 12 },
+                  ]}
+                >
+                  {/* Welcome row */}
+                  <View style={styles.welcomeRow}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+                      <Image
+                        source={{ uri: user?.photoURL || 'https://i.pravatar.cc/100?img=12' }}
+                        style={styles.avatar}
+                      />
+                      <View style={{ marginLeft: 10 }}>
+                        <Text style={styles.welcomeSmall}>Welcome Back!</Text>
+                        <Text weight={800} style={styles.welcomeName}>{user?.displayName || 'Jassica maria'} 👋</Text>
+                      </View>
                     </View>
+                    <TouchableOpacity style={styles.bellBtn} onPress={() => Alert.alert('แจ้งเตือน', 'เปิดการแจ้งเตือน')}>
+                      <Ionicons name="notifications-outline" size={18} color="#111827" />
+                    </TouchableOpacity>
                   </View>
-                  <TouchableOpacity style={styles.bellBtn} onPress={() => Alert.alert('แจ้งเตือน', 'เปิดการแจ้งเตือน')}>
-                    <Ionicons name="notifications-outline" size={18} color="#111827" />
+
+                  {/* Search field */}
+                  <View style={[styles.searchField, { borderColor: 'transparent' }]}> 
+                    <Ionicons name="search" size={18} color="#9ca3af" />
+                    <TextInput
+                      style={{ flex: 1, marginLeft: 8, color: '#111827' }}
+                      placeholder="Opportunity Title, Creator, Aggregator"
+                      placeholderTextColor="#9ca3af"
+                      returnKeyType="search"
+                    />
+                  </View>
+                  {/* quick actions removed per request */}
+                </LinearGradient>
+              </View>
+
+              {/* Promo solid brand card */}
+              <View style={[styles.promoCard, { marginTop: 12, backgroundColor: '#FFA500' }]}>
+                <View style={{ flex: 1 }}>
+                  <Text weight={800} style={{ color: '#ffffff', fontSize: 20 }}>หางานให้เจอเร็วขึ้น!</Text>
+                  <Text style={{ color: '#ffffff', opacity: 0.95, marginTop: 6 }}>ดูเคล็ดลับสมัครงานและจัด{`\n`}โปรไฟล์ให้โดน</Text>
+                  <TouchableOpacity style={styles.promoBtn}>
+                    <Text weight={700} style={{ color: '#111827' }}>อ่านเพิ่ม</Text>
                   </TouchableOpacity>
                 </View>
-
-                {/* Search field */}
-                <View style={[styles.searchField, { borderColor: 'transparent' }]}> 
-                  <Ionicons name="search" size={18} color="#9ca3af" />
-                  <TextInput
-                    style={{ flex: 1, marginLeft: 8, color: '#111827' }}
-                    placeholder="Opportunity Title, Creator, Aggregator"
-                    placeholderTextColor="#9ca3af"
-                    returnKeyType="search"
-                  />
-                </View>
-                {/* quick actions removed per request */}
-              </LinearGradient>
-            </View>
-
-            {/* Promo solid brand card */}
-            <View style={[styles.promoCard, { marginTop: 12, backgroundColor: '#FFA500' }]}>
-              <View style={{ flex: 1 }}>
-                <Text weight={800} style={{ color: '#ffffff', fontSize: 20 }}>หางานให้เจอเร็วขึ้น!</Text>
-                <Text style={{ color: '#ffffff', opacity: 0.95, marginTop: 6 }}>ดูเคล็ดลับสมัครงานและจัด{`\n`}โปรไฟล์ให้โดน</Text>
-                <TouchableOpacity style={styles.promoBtn}>
-                  <Text weight={700} style={{ color: '#111827' }}>อ่านเพิ่ม</Text>
-                </TouchableOpacity>
+                <Image
+                  source={{ uri: 'https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=400&auto=format&fit=crop' }}
+                  style={styles.promoImage}
+                />
               </View>
-              <Image
-                source={{ uri: 'https://images.unsplash.com/photo-1544717305-2782549b5136?q=80&w=400&auto=format&fit=crop' }}
-                style={styles.promoImage}
-              />
+
+              {/* Recommendation */}
+              <SectionHeader title="งานแนะนำ" actionLabel="ดูทั้งหมด" onActionPress={() => setSelectedCategory('All')} />
+              {seekerJobs[0] && <JobCard job={seekerJobs[0]} />}
+
+              {/* Recent Jobs */}
+              <SectionHeader title="งานล่าสุด" actionLabel="ดูทั้งหมด" onActionPress={() => setSelectedCategory('All')} />
+              {false && (
+                <FlatList
+                  data={categories}
+                  keyExtractor={(item) => item}
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.pillRow}
+                  renderItem={({ item }) => (
+                    <FilterPill
+                      label={item === 'All' ? 'ทั้งหมด' : item}
+                      active={item === selectedCategory}
+                      onPress={() => setSelectedCategory(item)}
+                    />
+                  )}
+                />
+              )}
             </View>
-
-            {/* Recommendation */}
-            <SectionHeader title="งานแนะนำ" actionLabel="ดูทั้งหมด" onActionPress={() => setSelectedCategory('All')} />
-            {seekerJobs[0] && <JobCard job={seekerJobs[0]} />}
-
-            {/* Recent Jobs */}
-            <SectionHeader title="งานล่าสุด" actionLabel="ดูทั้งหมด" onActionPress={() => setSelectedCategory('All')} />
-            {false && (
-              <FlatList
-                data={categories}
-                keyExtractor={(item) => item}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.pillRow}
-                renderItem={({ item }) => (
-                  <FilterPill
-                    label={item === 'All' ? 'ทั้งหมด' : item}
-                    active={item === selectedCategory}
-                    onPress={() => setSelectedCategory(item)}
-                  />
-                )}
-              />
-            )}
-          </View>
-        )}
-        renderItem={({ item }) => <JobCard job={item} />}
-        ListEmptyComponent={() => (
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyTitle}>ยังไม่มีงาน</Text>
-            <Text style={styles.emptySubtitle}>ลองเปลี่ยนหมวดหมู่หรือกลับมาดูใหม่อีกครั้ง</Text>
-          </View>
-        )}
-      />
+          )}
+          renderItem={({ item }) => <JobCard job={item} />}
+          ListEmptyComponent={() => (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyTitle}>ยังไม่มีงาน</Text>
+              <Text style={styles.emptySubtitle}>ลองเปลี่ยนหมวดหมู่หรือกลับมาดูใหม่อีกครั้ง</Text>
+            </View>
+          )}
+        />
     </SafeAreaView>
   );
 };
@@ -153,13 +161,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'transparent',
   },
+  container: {
+    flex: 1,
+    backgroundColor: '#f8fafc', // Kept the original background for the list content
+  },
   contentContainer: {
     padding: 20,
     // ลด padding ด้านล่างเพื่อไม่ให้เกิดช่องว่างเหนือแท็บบาร์
     paddingBottom: 16,
   },
   // ทำให้ส่วนหัวเต็มจอแบบไร้ขอบซ้าย/ขวา ด้วยการลบ padding ของ container ออกชั่วคราว
-  headerWrap: { marginHorizontal: -20, borderBottomLeftRadius: 24, borderBottomRightRadius: 24, overflow: 'hidden', marginBottom: 12 },
+  headerWrap: { marginHorizontal: -20, marginTop: -20, borderBottomLeftRadius: 24, borderBottomRightRadius: 24, overflow: 'hidden', marginBottom: 12 },
   headerGradient: { paddingVertical: 12, paddingHorizontal: 16 },
   welcomeRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
   avatar: { width: 36, height: 36, borderRadius: 18, borderWidth: StyleSheet.hairlineWidth, borderColor: '#ffffff88' },
