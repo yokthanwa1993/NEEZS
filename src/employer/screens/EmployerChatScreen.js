@@ -39,6 +39,70 @@ const mockChats = [
     unread: 0,
     avatar: { type: 'image', src: 'https://i.pravatar.cc/100?img=24' },
   },
+  {
+    id: 'c5',
+    name: 'ชนัญชิดา แสงแก้ว',
+    message: 'สะดวกเริ่มงานสัปดาห์หน้าได้เลยค่ะ',
+    time: 'จันทร์ 11:10',
+    unread: 0,
+    avatar: { type: 'image', src: 'https://i.pravatar.cc/100?img=32' },
+  },
+  {
+    id: 'c6',
+    name: 'อธิวัฒน์ เก่งกิจ',
+    message: 'แนบพอร์ตงานครัวมาให้ตรวจแล้วครับ',
+    time: 'อาทิตย์ที่แล้ว',
+    unread: 0,
+    avatar: { type: 'image', src: 'https://i.pravatar.cc/100?img=34' },
+  },
+  {
+    id: 'c7',
+    name: 'ภัทรานิษฐ์ อารีย์',
+    message: 'นัดสัมภาษณ์พรุ่งนี้ 14:00 ได้ไหมคะ',
+    time: 'เมื่อวาน 17:45',
+    unread: 3,
+    avatar: { type: 'image', src: 'https://i.pravatar.cc/100?img=41' },
+  },
+  {
+    id: 'c8',
+    name: 'ทีมงาน NEEZS Jobs',
+    message: 'คู่มือการใช้งานผู้ประกอบการเวอร์ชันใหม่',
+    time: '2 วันที่แล้ว',
+    unread: 0,
+    avatar: { type: 'image', src: 'https://i.pravatar.cc/100?img=8' },
+  },
+  {
+    id: 'c9',
+    name: 'ปณชัย สุนทร',
+    message: 'ส่งเอกสารยืนยันตัวตนเรียบร้อยครับ',
+    time: 'ศุกร์ 16:12',
+    unread: 0,
+    avatar: { type: 'image', src: 'https://i.pravatar.cc/100?img=44' },
+  },
+  {
+    id: 'c10',
+    name: 'กชสร อินทรสกุล',
+    message: 'ขอบคุณค่ะ เจอกันวันสัมภาษณ์นะคะ',
+    time: 'ศุกร์ 09:10',
+    unread: 0,
+    avatar: { type: 'image', src: 'https://i.pravatar.cc/100?img=46' },
+  },
+  {
+    id: 'c11',
+    name: 'คณิน วัฒนะ',
+    message: 'ผมสะดวกกะกลางคืนครับ',
+    time: 'พฤหัส 21:02',
+    unread: 1,
+    avatar: { type: 'image', src: 'https://i.pravatar.cc/100?img=48' },
+  },
+  {
+    id: 'c12',
+    name: 'มธุรส แสงทอง',
+    message: 'แนบเอกสารประวัติการทำงานไว้แล้วค่ะ',
+    time: 'พุธ 15:20',
+    unread: 0,
+    avatar: { type: 'image', src: 'https://i.pravatar.cc/100?img=50' },
+  },
 ];
 
 const Avatar = ({ avatar }) => {
@@ -131,7 +195,7 @@ const EmployerChatScreen = () => {
         data={data}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => <ChatItem item={item} onDelete={handleDelete} />}
-        contentContainerStyle={{ paddingTop: 8, paddingBottom: 0 }}
+        contentContainerStyle={{ paddingTop: 8, paddingBottom: 24 }}
         ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
         style={{ flex: 1 }}
       />

@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { View, StyleSheet, FlatList, TouchableOpacity, Alert, TextInput, Image, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-// removed gradient usage for solid brand background
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Text, H1, H2, MediumText } from '../../shared/components/Typography';
 import FilterPill from '../components/FilterPill';
@@ -55,50 +55,43 @@ const SeekerScreen = ({ navigation }) => {
         contentContainerStyle={styles.contentContainer}
         ListHeaderComponent={() => (
           <View>
-            {/* Header solid brand background (แบบ e-wallet) */}
+            {/* Header gradient style ตามตัวอย่าง */}
             <View style={styles.headerWrap}>
-              <View style={[styles.headerGradient, { backgroundColor: '#FFA500' }]}>
-                {/* top brand + search row */}
-                <View style={styles.brandRow}>
-                  <View style={styles.logoBox} />
-                  <View style={styles.searchField}>
-                    <Ionicons name="search" size={18} color="#9ca3af" />
-                    <TextInput
-                      style={{ flex: 1, marginLeft: 8, color: '#111827' }}
-                      placeholder="ค้นหางาน ตำแหน่ง หรือสถานที่"
-                      placeholderTextColor="#9ca3af"
-                      returnKeyType="search"
+              <LinearGradient
+                colors={["#ff6a00", "#ff8c39"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.headerGradient}
+              >
+                {/* Welcome row */}
+                <View style={styles.welcomeRow}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+                    <Image
+                      source={{ uri: user?.photoURL || 'https://i.pravatar.cc/100?img=12' }}
+                      style={styles.avatar}
                     />
+                    <View style={{ marginLeft: 10 }}>
+                      <Text style={styles.welcomeSmall}>Welcome Back!</Text>
+                      <Text weight={800} style={styles.welcomeName}>{user?.displayName || 'Jassica maria'} 👋</Text>
+                    </View>
                   </View>
-                  <TouchableOpacity style={styles.iconBtnClear} onPress={() => Alert.alert('แชท', 'เปิดกล่องข้อความ')}>
-                    <Ionicons name="chatbubbles-outline" size={18} color="#111827" />
-                    <View style={styles.badge}><Text weight={700} style={{ color: '#fff', fontSize: 10 }}>4</Text></View>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.iconBtnClear} onPress={() => Alert.alert('แจ้งเตือน', 'เปิดการแจ้งเตือน')}>
+                  <TouchableOpacity style={styles.bellBtn} onPress={() => Alert.alert('แจ้งเตือน', 'เปิดการแจ้งเตือน')}>
                     <Ionicons name="notifications-outline" size={18} color="#111827" />
-                    <View style={styles.badge}><Text weight={700} style={{ color: '#fff', fontSize: 10 }}>9</Text></View>
                   </TouchableOpacity>
                 </View>
-                {/* quick actions bar */}
-                <View style={styles.quickBar}>
-                  <View style={styles.quickItem}>
-                    <Ionicons name="swap-horizontal" size={20} color="#fff" />
-                    <Text weight={800} style={styles.quickText}>โอนเงิน</Text>
-                  </View>
-                  <View style={styles.quickItem}>
-                    <Ionicons name="download-outline" size={20} color="#fff" />
-                    <Text weight={800} style={styles.quickText}>รับเงิน</Text>
-                  </View>
-                  <View style={styles.quickItem}>
-                    <Ionicons name="scan" size={20} color="#fff" />
-                    <Text weight={800} style={styles.quickText}>สแกน</Text>
-                  </View>
-                  <View style={styles.quickItem}>
-                    <Ionicons name="card-outline" size={20} color="#fff" />
-                    <Text weight={800} style={styles.quickText}>จ่ายเงิน</Text>
-                  </View>
+
+                {/* Search field */}
+                <View style={[styles.searchField, { borderColor: 'transparent' }]}> 
+                  <Ionicons name="search" size={18} color="#9ca3af" />
+                  <TextInput
+                    style={{ flex: 1, marginLeft: 8, color: '#111827' }}
+                    placeholder="Opportunity Title, Creator, Aggregator"
+                    placeholderTextColor="#9ca3af"
+                    returnKeyType="search"
+                  />
                 </View>
-              </View>
+                {/* quick actions removed per request */}
+              </LinearGradient>
             </View>
 
             {/* Promo solid brand card */}
@@ -122,20 +115,22 @@ const SeekerScreen = ({ navigation }) => {
 
             {/* Recent Jobs */}
             <SectionHeader title="งานล่าสุด" actionLabel="ดูทั้งหมด" onActionPress={() => setSelectedCategory('All')} />
-            <FlatList
-              data={categories}
-              keyExtractor={(item) => item}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.pillRow}
-              renderItem={({ item }) => (
-                <FilterPill
-                  label={item === 'All' ? 'ทั้งหมด' : item}
-                  active={item === selectedCategory}
-                  onPress={() => setSelectedCategory(item)}
-                />
-              )}
-            />
+            {false && (
+              <FlatList
+                data={categories}
+                keyExtractor={(item) => item}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.pillRow}
+                renderItem={({ item }) => (
+                  <FilterPill
+                    label={item === 'All' ? 'ทั้งหมด' : item}
+                    active={item === selectedCategory}
+                    onPress={() => setSelectedCategory(item)}
+                  />
+                )}
+              />
+            )}
           </View>
         )}
         renderItem={({ item }) => <JobCard job={item} />}
@@ -163,6 +158,11 @@ const styles = StyleSheet.create({
   // ทำให้ส่วนหัวเต็มจอแบบไร้ขอบซ้าย/ขวา ด้วยการลบ padding ของ container ออกชั่วคราว
   headerWrap: { marginHorizontal: -20, borderBottomLeftRadius: 24, borderBottomRightRadius: 24, overflow: 'hidden', marginBottom: 12 },
   headerGradient: { paddingVertical: 12, paddingHorizontal: 16 },
+  welcomeRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
+  avatar: { width: 36, height: 36, borderRadius: 18, borderWidth: StyleSheet.hairlineWidth, borderColor: '#ffffff88' },
+  welcomeSmall: { color: '#ffffff', opacity: 0.9 },
+  welcomeName: { color: '#ffffff', fontSize: 18 },
+  bellBtn: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#ffffff', alignItems: 'center', justifyContent: 'center' },
   brandRow: { flexDirection: 'row', alignItems: 'center' },
   logoBox: { width: 28, height: 28, borderRadius: 6, backgroundColor: '#fff' },
   searchField: { flex: 1, flexDirection: 'row', alignItems:'center', backgroundColor: '#fff', borderRadius: 16, paddingHorizontal: 12, paddingVertical: 10, marginHorizontal: 10, borderWidth: StyleSheet.hairlineWidth, borderColor: '#e5e7eb' },
